@@ -1,3 +1,5 @@
+using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Application.Services;
 using CurrencyTracker.Domain.Interfaces;
 using CurrencyTracker.Infrastructure.Implementations;
 using CurrencyTracker.Infrastructure.Persistence;
@@ -13,6 +15,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 });
 
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IUserService,UserService>();
+
+
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
