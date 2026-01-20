@@ -1,4 +1,3 @@
-using System;
 using System.Linq.Expressions;
 using CurrencyTracker.Domain.Interfaces;
 using CurrencyTracker.Infrastructure.Persistence;
@@ -33,7 +32,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.FindAsync(Id);
 
     }
-
     public void Remove(T entity)
     {
         _dbSet.Remove(entity);
