@@ -8,9 +8,18 @@ namespace CurrencyTracker.Infrastructure.Implementations;
 
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
+    private readonly DbSet<T> _dbSet;
+    private readonly AppDbContext _context;
+
+    public GenericRepository(AppDbContext context) {
+        
+        _context = context;
+        _dbSet=_context.Set<T>();
+
+    }
     public Task<T> AddAsync(T entity)
     {
-        throw new NotImplementedException();
+        
     }
 
     public IQueryable<T> GetAll()
