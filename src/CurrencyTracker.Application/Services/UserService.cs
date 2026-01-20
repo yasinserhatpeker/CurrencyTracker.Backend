@@ -2,26 +2,37 @@ using System;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Domain.Entities;
+using CurrencyTracker.Domain.Interfaces;
 
 namespace CurrencyTracker.Application.Services;
 
 public class UserService : IUserService
 {  
-    private readonly Mapper _mapper;
-    public UserService(Mapper mapper)
+    private readonly IMapper _mapper;
+    private readonly IGenericRepository<User> _userRepository;
+
+    public UserService(IMapper mapper, IGenericRepository<User> userRepository)
     {
-        _mapper =mapper;
+        _mapper=mapper;
+        _userRepository=userRepository;
     }
-    
+
 
      
-    public Task CreateUserAsync(CreateUserDTO createUserDTO)
+    public async Task CreateUserAsync(CreateUserDTO createUserDTO)
     {
-        throw new NotImplementedException();
+        var newUser = _mapper.Map<User>(createUserDTO);
+        await _userRepository.AddAsync(newUser);
+
     }
 
-    public Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
     {
-        throw new NotImplementedException();
-    }
+        var users = _userRepository.GetAll();
+        var mappedUsers = _mapper.Map<IEnumerable<UserResponseDTO>>(users);
+
+        return await Task.FromResult(mappedUsers); // for async task
+        
+    } 
 }
