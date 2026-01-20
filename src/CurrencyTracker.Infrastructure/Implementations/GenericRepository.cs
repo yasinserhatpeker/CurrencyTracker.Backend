@@ -17,33 +17,35 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _dbSet=_context.Set<T>();
 
     }
-    public Task<T> AddAsync(T entity)
+    public async Task<T> AddAsync(T entity)
     {
-        
+         await _dbSet.AddAsync(entity);
+         return entity;
     }
 
     public IQueryable<T> GetAll()
     {
-        throw new NotImplementedException();
+        return _dbSet.AsNoTracking();
     }
 
-    public Task<T> GetByIdAsync(int Id)
+    public async Task<T?> GetByIdAsync(int Id)
     {
-        throw new NotImplementedException();
+        return await _dbSet.FindAsync(Id);
+
     }
 
     public void Remove(T entity)
     {
-        throw new NotImplementedException();
+        _dbSet.Remove(entity);
     }
 
     public void Update(T entity)
     {
-        throw new NotImplementedException();
+        _dbSet.Update(entity);
     }
 
     public IQueryable<T> Where(Expression<Func<T, bool>> predicate)
     {
-        throw new NotImplementedException();
+        return _dbSet.Where(predicate).AsNoTracking();
     }
 }
