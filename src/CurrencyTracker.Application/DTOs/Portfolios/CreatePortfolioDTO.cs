@@ -7,5 +7,6 @@ namespace CurrencyTracker.Application.DTOs.Portfolios;
 public class CreatePortfolioDTO
 {
    public string Name {get;set;} = default!;
-   public User User {get;set;} = default!;
+   public Guid UserId {get;set;}
+   
 }
