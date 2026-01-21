@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
+using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
@@ -47,6 +48,11 @@ public class UserService : IUserService
     }
 
     public Task UpdateUserAsync(Guid id, CreateUserDTO createUserDTO)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
     {
         throw new NotImplementedException();
     }
