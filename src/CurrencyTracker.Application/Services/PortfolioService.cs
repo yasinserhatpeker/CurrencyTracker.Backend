@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs.Portfolios;
 using CurrencyTracker.Application.Interfaces;
@@ -20,12 +21,24 @@ public class PortfolioService : IPortfolioService
     
     public async Task CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO)
     {
-        
+        var newPortfolio = _mapper.Map<Portfolio>(createPortfolioDTO);
+
+        await _portfolioRepository.AddAsync(newPortfolio);
+
+        await _portfolioRepository.SaveAsync();
     }
 
-    public Task DeletePortfolioAsync(Guid id)
+    public async Task DeletePortfolioAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var portfolio = await _portfolioRepository.GetByIdAsync(id);
+        if(portfolio is null)
+        {
+            return;
+        }
+        _portfolioRepository.Remove(portfolio);
+        
+        await _portfolioRepository.SaveAsync();
+
     }
 
     public Task<PortfolioResponseDTO> GetByIdAsync(Guid id)
