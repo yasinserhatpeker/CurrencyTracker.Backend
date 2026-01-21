@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs.Portfolios;
 using CurrencyTracker.Application.Interfaces;
@@ -36,23 +34,52 @@ public class PortfolioService : IPortfolioService
             return;
         }
         _portfolioRepository.Remove(portfolio);
-        
+
         await _portfolioRepository.SaveAsync();
 
     }
 
-    public Task<PortfolioResponseDTO> GetByIdAsync(Guid id)
+    public async Task<PortfolioResponseDTO> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var portfolio = await _portfolioRepository.GetByIdAsync(id);
+        if(portfolio is null)
+        {
+            return null!;
+        }
+        return _mapper.Map<PortfolioResponseDTO>(portfolio);
     }
 
-    public Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid UserId)
+    public async Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid userId)
     {
-        throw new NotImplementedException();
+        var allPortfolios =  _portfolioRepository.GetAll();
+        if(allPortfolios is null)
+        {
+            return null!;
+        }
+        var userPortfolios = allPortfolios.Where(p => p.UserId == userId);
+        if(userPortfolios is null)
+        {
+            return null!;
+        }
+        var mappedPortfolios = _mapper.Map<IEnumerable<PortfolioResponseDTO>>(userPortfolios);
+
+   
+        return await Task.FromResult(mappedPortfolios);
+     
+
     }
 
-    public Task UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
+    public async Task UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
     {
-        throw new NotImplementedException();
+       var portfolio = await _portfolioRepository.GetByIdAsync(id);
+       if(portfolio is null)
+        {
+            return ;
+        }
+        _mapper.Map(updatePortfolioDTO,portfolio);
+
+         _portfolioRepository.Update(portfolio);
+
+        await _portfolioRepository.SaveAsync();
     }
 }
