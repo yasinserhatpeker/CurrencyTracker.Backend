@@ -17,6 +17,7 @@ public class MappingProfile : Profile
 
         CreateMap<CreatePortfolioDTO,Portfolio>();
         CreateMap<Portfolio,PortfolioResponseDTO>();
+        CreateMap<UpdatePortfolioDTO,Portfolio>();
 
 
 

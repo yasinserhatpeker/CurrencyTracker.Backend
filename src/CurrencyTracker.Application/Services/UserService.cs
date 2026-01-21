@@ -26,11 +26,20 @@ public class UserService : IUserService
         var newUser = _mapper.Map<User>(createUserDTO);
         await _userRepository.AddAsync(newUser);
 
+        await _userRepository.SaveAsync();
+
     }
 
-    public Task DeleteUserAsync(Guid id)
+    public async Task DeleteUserAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByIdAsync(id);
+        if(user is null)
+        {
+            return;
+        }
+         _userRepository.Remove(user);
+
+        await _userRepository.SaveAsync();
     }
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
@@ -42,18 +51,31 @@ public class UserService : IUserService
         
     }
 
-    public Task<UserResponseDTO> GetByIdAsync(Guid id)
+    public async Task<UserResponseDTO> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _userRepository.GetByIdAsync(id);
+        if(user is null)
+        {
+            return null!;
+        }
+        return _mapper.Map<UserResponseDTO>(user);
+
+
     }
 
-    public Task UpdateUserAsync(Guid id, CreateUserDTO createUserDTO)
+    public async Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
     {
-        throw new NotImplementedException();
-    }
+        var user = await _userRepository.GetByIdAsync(id);
+        if(user is null)
+        {
+            return;
 
-    public Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
-    {
-        throw new NotImplementedException();
+        }
+        _mapper.Map(updateUserDTO,user);
+
+        _userRepository.Update(user);
+
+        await _userRepository.SaveAsync();
+
     }
 }
