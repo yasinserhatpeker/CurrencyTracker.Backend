@@ -27,6 +27,11 @@ public class UserService : IUserService
 
     }
 
+    public Task DeleteUserAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
     {
         var users = _userRepository.GetAll();
@@ -34,5 +39,15 @@ public class UserService : IUserService
 
         return await Task.FromResult(mappedUsers); // for async task
         
-    } 
+    }
+
+    public Task<UserResponseDTO> GetByIdAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateUserAsync(Guid id, CreateUserDTO createUserDTO)
+    {
+        throw new NotImplementedException();
+    }
 }
