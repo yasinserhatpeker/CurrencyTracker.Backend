@@ -5,9 +5,9 @@ using CurrencyTracker.Domain.Entities;
 
 namespace CurrencyTracker.Application.Mappings;
 
-public class UserProfile : Profile
+public class MappingProfile : Profile
 {
-   public UserProfile()
+   public MappingProfile()
     {
         CreateMap<CreateUserDTO,User>().ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password)); // CreateMap<Source,Destination>(); src-> password == dest-> passwordHash
         CreateMap<User,UserResponseDTO>();
