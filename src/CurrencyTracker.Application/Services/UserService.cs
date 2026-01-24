@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Users;
@@ -44,10 +43,12 @@ public class UserService : IUserService
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
     {
-        var users = _userRepository.GetAll();
-        var mappedUsers = _mapper.Map<IEnumerable<UserResponseDTO>>(users);
-
-        return await Task.FromResult(mappedUsers); // for async task
+        var users = await _userRepository.GetAllAsync();
+       if (!users.Any()) 
+    {
+        throw new Exception("No user is found");
+    }
+        return _mapper.Map<IEnumerable<UserResponseDTO>>(users);
         
     }
 

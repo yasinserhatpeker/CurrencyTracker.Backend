@@ -5,6 +5,7 @@ using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Interfaces;
 
 
+
 namespace CurrencyTracker.Application.Services;
 
 public class TransactionService : ITransactionService
@@ -48,9 +49,18 @@ public class TransactionService : ITransactionService
         return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
-    public Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId)
+    public async Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId)
     {
-        throw new NotImplementedException();
+      var portfolioTransactions = await _transactionRepository.Find(x=>x.PortfolioId==portfolioId);
+
+      if (!portfolioTransactions.Any()) 
+    {
+        throw new Exception("No transaction is found");
+    }
+        
+       return _mapper.Map<IEnumerable<TransactionResponseDTO>>(portfolioTransactions);
+
+
     }
 
     public async Task UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
@@ -63,7 +73,7 @@ public class TransactionService : ITransactionService
          _mapper.Map(updateTransactionDTO,transaction);
 
          _transactionRepository.Update(transaction);
-         
+
          await _transactionRepository.SaveAsync();
    }
 }

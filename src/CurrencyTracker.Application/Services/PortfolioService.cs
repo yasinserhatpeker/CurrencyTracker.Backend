@@ -51,21 +51,13 @@ public class PortfolioService : IPortfolioService
 
     public async Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid userId)
     {
-        var allPortfolios =  _portfolioRepository.GetAll();
-        if(allPortfolios is null)
-        {
-           throw new Exception("There's no portfolio");
-        }
-        var userPortfolios = allPortfolios.Where(p => p.UserId == userId);
-        if(userPortfolios is null)
-        {
-            throw new Exception("This user has no portfolio.");
-        }
-        var mappedPortfolios = _mapper.Map<IEnumerable<PortfolioResponseDTO>>(userPortfolios);
-
-   
-        return await Task.FromResult(mappedPortfolios);
-     
+        var userPortfolios = await _portfolioRepository.Find(x => x.UserId == userId);
+       if (!userPortfolios.Any()) 
+    {
+        throw new Exception("No portfolio is found");
+    }
+        
+        return _mapper.Map<IEnumerable<PortfolioResponseDTO>>(userPortfolios);
 
     }
 

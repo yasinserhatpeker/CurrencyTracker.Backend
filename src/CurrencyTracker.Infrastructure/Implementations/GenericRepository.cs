@@ -22,9 +22,9 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
          return entity;
     }
 
-    public IQueryable<T> GetAll()
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return _dbSet.AsNoTracking();
+        return await _dbSet.AsNoTracking().ToListAsync();
     }
 
     public async Task<T?> GetByIdAsync(Guid Id)
@@ -47,8 +47,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         _dbSet.Update(entity);
     }
 
-    public IQueryable<T> Where(Expression<Func<T, bool>> predicate)
+    public async Task<IEnumerable<T>> Find(Expression<Func<T, bool>> predicate)
     {
-        return _dbSet.Where(predicate).AsNoTracking();
+        return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
 }
