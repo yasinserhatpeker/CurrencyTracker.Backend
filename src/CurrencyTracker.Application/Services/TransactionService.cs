@@ -1,9 +1,9 @@
-using System;
-using System.Transactions;
+using CurrencyTracker.Domain.Entities;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Interfaces;
+using System.Security.Cryptography;
 
 namespace CurrencyTracker.Application.Services;
 
@@ -19,12 +19,23 @@ public class TransactionService : ITransactionService
     }
     public async Task CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO)
     {
+        var transaction = _mapper.Map<Transaction>(createTransactionsDTO);
         
+        await _transactionRepository.AddAsync(transaction);
+
+        await _transactionRepository.SaveAsync();
     }
 
-    public Task DeleteTransactionAsync(Guid id)
+    public async Task RemoveTransactionAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var transaction = await _transactionRepository.GetByIdAsync(id);
+        if(transaction is null)
+        {
+           throw new Exception("Transaction not found");
+        }
+         _transactionRepository.Remove(transaction);
+         
+         await _transactionRepository.SaveAsync();
     }
 
     public Task<TransactionResponseDTO> GetByIdAsync(Guid Id)

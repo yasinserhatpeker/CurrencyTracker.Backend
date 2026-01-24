@@ -11,6 +11,6 @@ public interface IUserService
    Task CreateUserAsync(CreateUserDTO createUserDTO);
    Task<UserResponseDTO> GetByIdAsync(Guid id);
    Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO);
-   Task DeleteUserAsync(Guid id);
+   Task RemoveUserAsync(Guid id);
    
 }

@@ -26,12 +26,12 @@ public class PortfolioService : IPortfolioService
         await _portfolioRepository.SaveAsync();
     }
 
-    public async Task DeletePortfolioAsync(Guid id)
+    public async Task RemovePortfolioAsync(Guid id)
     {
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
         if(portfolio is null)
         {
-            return;
+            throw new Exception("Portfolio is not found");
         }
         _portfolioRepository.Remove(portfolio);
 

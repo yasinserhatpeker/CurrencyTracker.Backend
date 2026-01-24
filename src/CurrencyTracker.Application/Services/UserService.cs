@@ -30,12 +30,12 @@ public class UserService : IUserService
 
     }
 
-    public async Task DeleteUserAsync(Guid id)
+    public async Task RemoveUserAsync(Guid id)
     {
         var user = await _userRepository.GetByIdAsync(id);
         if(user is null)
         {
-            return;
+            throw new Exception("User is not found");
         }
          _userRepository.Remove(user);
 
