@@ -21,8 +21,4 @@
     <ProjectReference Include="..\CurrencyTracker.Infrastructure\CurrencyTracker.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers/" />
-  </ItemGroup>
-
 </Project>
