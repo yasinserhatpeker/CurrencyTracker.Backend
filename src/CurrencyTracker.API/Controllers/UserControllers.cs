@@ -27,7 +27,7 @@ namespace CurrencyTracker.API.Controllers
             }
             catch(Exception ex)
             {
-                return BadRequest(new {message = ex.Message});
+                return BadRequest (new {message = ex.Message});
             }
         } 
 
@@ -42,7 +42,21 @@ namespace CurrencyTracker.API.Controllers
             }
             catch(Exception ex)
             {
-                return BadRequest(new{message =ex.Message});
+                return NotFound (new{message =ex.Message});
+            }
+
+        }
+          [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            try
+            {
+                var user = _userService.GetByIdAsync(id);
+                return Ok(user);
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new{message=ex.Message});
             }
         }
     }
