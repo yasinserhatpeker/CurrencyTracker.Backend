@@ -44,7 +44,7 @@ public class PortfolioService : IPortfolioService
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
         if(portfolio is null)
         {
-            return null!;
+            throw new Exception("Portfolio is not found");
         }
         return _mapper.Map<PortfolioResponseDTO>(portfolio);
     }
@@ -54,12 +54,12 @@ public class PortfolioService : IPortfolioService
         var allPortfolios =  _portfolioRepository.GetAll();
         if(allPortfolios is null)
         {
-            return null!;
+           throw new Exception("There's no portfolio");
         }
         var userPortfolios = allPortfolios.Where(p => p.UserId == userId);
         if(userPortfolios is null)
         {
-            return null!;
+            throw new Exception("This user has no portfolio.");
         }
         var mappedPortfolios = _mapper.Map<IEnumerable<PortfolioResponseDTO>>(userPortfolios);
 
@@ -74,7 +74,7 @@ public class PortfolioService : IPortfolioService
        var portfolio = await _portfolioRepository.GetByIdAsync(id);
        if(portfolio is null)
         {
-            return ;
+            throw new Exception("No portfolio is found");
         }
         _mapper.Map(updatePortfolioDTO,portfolio);
 

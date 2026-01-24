@@ -3,7 +3,7 @@ using AutoMapper;
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Interfaces;
-using System.Security.Cryptography;
+
 
 namespace CurrencyTracker.Application.Services;
 
@@ -31,16 +31,21 @@ public class TransactionService : ITransactionService
         var transaction = await _transactionRepository.GetByIdAsync(id);
         if(transaction is null)
         {
-           throw new Exception("Transaction not found");
+           throw new Exception("Transaction is not found");
         }
          _transactionRepository.Remove(transaction);
-         
+
          await _transactionRepository.SaveAsync();
     }
 
-    public Task<TransactionResponseDTO> GetByIdAsync(Guid Id)
+    public async Task<TransactionResponseDTO> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var transaction = await _transactionRepository.GetByIdAsync(id);
+        if(transaction is null)
+        {
+            throw new Exception("Transaction is not found");
+        }
+        return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
     public Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId)
@@ -48,8 +53,17 @@ public class TransactionService : ITransactionService
         throw new NotImplementedException();
     }
 
-    public Task UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
+    public async Task UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
     {
-        throw new NotImplementedException();
-    }
+        var transaction = await _transactionRepository.GetByIdAsync(id);
+        if(transaction is null)
+        {
+            throw new Exception("No transaction is found");
+        }
+         _mapper.Map(updateTransactionDTO,transaction);
+
+         _transactionRepository.Update(transaction);
+         
+         await _transactionRepository.SaveAsync();
+   }
 }

@@ -56,7 +56,7 @@ public class UserService : IUserService
         var user = await _userRepository.GetByIdAsync(id);
         if(user is null)
         {
-            return null!;
+            throw new Exception("No user is found");
         }
         return _mapper.Map<UserResponseDTO>(user);
 
@@ -68,7 +68,7 @@ public class UserService : IUserService
         var user = await _userRepository.GetByIdAsync(id);
         if(user is null)
         {
-            return;
+             throw new Exception("No user is found");
 
         }
         _mapper.Map(updateUserDTO,user);
