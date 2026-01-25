@@ -1,6 +1,6 @@
 using CurrencyTracker.Application.DTOs;
+using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
-using CurrencyTracker.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -59,5 +59,26 @@ namespace CurrencyTracker.API.Controllers
                 return NotFound(new{message=ex.Message});
             }
         }
+
+       [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDTO updateUserDTO)
+        {
+            if(id != updateUserDTO.Id)
+            {
+                return BadRequest("ID mismatch.");
+            }
+           try
+            {
+                 await _userService.UpdateUserAsync(id,updateUserDTO);
+                 return Ok(new {message = "User updated succesfully!"});
+            } 
+            catch(Exception ex)
+            {
+                return NotFound(new {message = ex.Message});
+            }
+        }
+
+        
+
     }
 }
