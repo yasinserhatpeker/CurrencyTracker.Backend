@@ -51,7 +51,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                var user = _userService.GetByIdAsync(id);
+                var user = await _userService.GetByIdAsync(id);
                 return Ok(user);
             }
             catch(Exception ex)
@@ -78,7 +78,19 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _userService.RemoveUserAsync(id);
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
 
     }
 }

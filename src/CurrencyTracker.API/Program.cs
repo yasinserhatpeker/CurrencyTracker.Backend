@@ -16,7 +16,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IUserService,UserService>();
+builder.Services.AddScoped<IPortfolioService,PortfolioService>();
+builder.Services.AddScoped<ITransactionService,TransactionService>();
 
 
 
