@@ -37,8 +37,8 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                var user = await _portfolioService.GetByIdAsync(id);
-                return Ok(user);
+                var portfolio = await _portfolioService.GetByIdAsync(id);
+                return Ok(portfolio);
             }
         
           catch(Exception ex)
