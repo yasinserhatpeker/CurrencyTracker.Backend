@@ -6,10 +6,10 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PortfolioController : ControllerBase
+    public class PortfoliosController : ControllerBase
     {
         private readonly IPortfolioService _portfolioService;
-        public PortfolioController(IPortfolioService portfolioService)
+        public PortfoliosController(IPortfolioService portfolioService)
         {
             _portfolioService = portfolioService;
         }
