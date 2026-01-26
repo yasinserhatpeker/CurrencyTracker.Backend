@@ -61,7 +61,21 @@ namespace CurrencyTracker.API.Controllers
                 return NotFound(new{message=ex.Message});
 
             }
-            
+
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _transactionService.RemoveTransactionAsync(id);
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new{message = ex.Message});
+            }
         }
     }
 }
