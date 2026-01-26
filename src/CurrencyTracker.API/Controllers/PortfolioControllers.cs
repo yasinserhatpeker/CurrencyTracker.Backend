@@ -27,7 +27,7 @@ namespace CurrencyTracker.API.Controllers
             }
             catch(Exception ex)
             {
-                return BadRequest(new{message=ex.Message});
+                return BadRequest (new{message=ex.Message});
             }
 
         }
@@ -43,10 +43,35 @@ namespace CurrencyTracker.API.Controllers
         
           catch(Exception ex)
             {
-                return NotFound(new{message=ex.Message});
+                return NotFound (new{message=ex.Message});
             }
         }
 
-        
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetPortfoliosByUser(Guid userId)
+        {
+            try
+            {
+               var portfolios = await _portfolioService.GetPortfoliosByUserAsync(userId);
+               return Ok(portfolios);
+            }
+            catch(Exception ex)
+            {
+                return NotFound (new{message=ex.Message});
+            }
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                await _portfolioService.RemovePortfolioAsync(id);
+                return NoContent();
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }
