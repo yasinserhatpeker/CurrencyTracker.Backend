@@ -73,5 +73,23 @@ namespace CurrencyTracker.API.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
+        [HttpPost("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
+        {
+            if(updatePortfolioDTO.Id != id)
+            {
+                return BadRequest("ID mismatch");
+            }
+            try
+            {
+                await _portfolioService.UpdatePortfolioAsync(id,updatePortfolioDTO);
+                return Ok(new{message="Portfolio updated succesfully!"});
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new{message=ex.Message});
+            }
+        }
     }
 }
