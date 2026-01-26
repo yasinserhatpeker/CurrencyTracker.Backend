@@ -31,5 +31,22 @@ namespace CurrencyTracker.API.Controllers
             }
 
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            try
+            {
+                var user = await _portfolioService.GetByIdAsync(id);
+                return Ok(user);
+            }
+        
+          catch(Exception ex)
+            {
+                return NotFound(new{message=ex.Message});
+            }
+        }
+
+        
     }
 }
