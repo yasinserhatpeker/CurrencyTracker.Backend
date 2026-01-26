@@ -77,5 +77,23 @@ namespace CurrencyTracker.API.Controllers
                 return NotFound(new{message = ex.Message});
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateTransactionDTO updateTransactionDTO)
+        {
+            if(updateTransactionDTO.Id != id)
+            {
+                return BadRequest("Transaction is not found");
+            }
+            try
+            {
+                await _transactionService.UpdateTransactionAsync(id,updateTransactionDTO);
+                return Ok(new{message ="Transaction updated succesfully"});
+            }
+            catch(Exception ex)
+            {
+                return NotFound(new{message=ex.Message});
+            }
+        }
     }
 }
