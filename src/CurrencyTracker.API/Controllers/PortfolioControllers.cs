@@ -6,10 +6,10 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PortfolioControllers : ControllerBase
+    public class PortfolioController : ControllerBase
     {
         private readonly IPortfolioService _portfolioService;
-        public PortfolioControllers(IPortfolioService portfolioService)
+        public PortfolioController(IPortfolioService portfolioService)
         {
             _portfolioService = portfolioService;
         }
@@ -74,7 +74,7 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-        [HttpPost("{id}")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
         {
             if(updatePortfolioDTO.Id != id)
@@ -91,5 +91,6 @@ namespace CurrencyTracker.API.Controllers
                 return NotFound(new{message=ex.Message});
             }
         }
+
     }
 }
