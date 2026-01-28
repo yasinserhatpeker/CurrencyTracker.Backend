@@ -70,12 +70,16 @@ public class AuthService : IAuthService
          };
 
     }
-
-
-
-    public Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
+    public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
     {
-        throw new NotImplementedException();
+        var users= await _userRepository.Find(u=>u.RefreshToken == RefreshToken);
+         var user = users.FirstOrDefault();
+
+         if(user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        {
+            throw new Exception("The session is expired. Please log in again");
+        }
+        return await GenerateAuthResponseAsync(user);
     }
 
 }
