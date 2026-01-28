@@ -26,8 +26,8 @@ public class AuthService : IAuthService
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
-       var users = await _userRepository.GetAllAsync(); // for mvp it'll change later
-       if(users.Any(u =>u.Email == createUserDTO.Email) )
+      var existingUsers = await _userRepository.Find(u=>u.Email == createUserDTO.Email);
+      if(existingUsers.Any())
         {
             throw new Exception("This email is already used");
         }
@@ -43,8 +43,8 @@ public class AuthService : IAuthService
     }
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
-        var users = await _userRepository.GetAllAsync(); // for mvp it'll change later
-        var user = users.FirstOrDefault(u=> u.Email == loginUserDTO.Email);
+        var users = await _userRepository.Find(u=>u.Email == loginUserDTO.Email);
+        var user = users.FirstOrDefault();
 
         if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
         {
