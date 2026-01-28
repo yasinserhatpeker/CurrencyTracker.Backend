@@ -5,6 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTOs/Auth/" />
     <Folder Include="DTOs/Portfolios/" />
     <Folder Include="Interfaces/" />
     <Folder Include="Services/" />
