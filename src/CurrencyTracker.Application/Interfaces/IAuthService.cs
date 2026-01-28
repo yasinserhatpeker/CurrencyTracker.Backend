@@ -1,4 +1,3 @@
-using System;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
