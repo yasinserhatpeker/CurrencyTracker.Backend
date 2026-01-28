@@ -1,5 +1,6 @@
 using System;
 using AutoMapper;
+using BCrypt.Net;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
@@ -28,7 +29,7 @@ public class AuthService : IAuthService
        var users = await _userRepository.GetAllAsync(); // for mvp it'll change later
        if(users.Any(u =>u.Email == createUserDTO.Email) )
         {
-            throw new Exception("This email is already  used");
+            throw new Exception("This email is already used");
         }
         var user = _mapper.Map<User>(createUserDTO);
 
@@ -40,9 +41,16 @@ public class AuthService : IAuthService
         return _mapper.Map<UserResponseDTO>(user);
 
     }
-    public Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
+    public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
-        throw new NotImplementedException();
+        var users = await _userRepository.GetAllAsync(); // for mvp it'll change later
+        var user = users.FirstOrDefault(u=> u.Email == loginUserDTO.Email);
+
+        if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
+        {
+           throw new Exception("Invalid email or password.");
+        }
+        
     }
 
     public Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
