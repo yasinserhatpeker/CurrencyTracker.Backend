@@ -6,8 +6,8 @@ namespace CurrencyTracker.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<UserResponseDTO> RegisterUserAsync(CreateUserDTO createUserDTO); // registering user
-    Task<AuthResponseDTO> LoginUserAsync(LoginUserDTO loginUserDTO);   // logging user
+    Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO); // registering user
+    Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO);   // logging user
     Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken); // new refresh token generate
 
 }

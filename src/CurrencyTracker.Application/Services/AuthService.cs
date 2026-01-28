@@ -23,11 +23,24 @@ public class AuthService : IAuthService
         _userRepository = userRepository;
         _configuration = configuration;
     }
-    public Task<UserResponseDTO> RegisterUserAsync(CreateUserDTO createUserDTO)
+    public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
-        throw new NotImplementedException();
+       var users = await _userRepository.GetAllAsync(); // for mvp it'll change later
+       if(users.Any(u =>u.Email == createUserDTO.Email) )
+        {
+            throw new Exception("This email is already  used");
+        }
+        var user = _mapper.Map<User>(createUserDTO);
+
+        //password hashing
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
+        user.AuthProvider="Local";
+
+        await _userRepository.AddAsync(user);
+        return _mapper.Map<UserResponseDTO>(user);
+
     }
-    public Task<AuthResponseDTO> LoginUserAsync(LoginUserDTO loginUserDTO)
+    public Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
         throw new NotImplementedException();
     }
