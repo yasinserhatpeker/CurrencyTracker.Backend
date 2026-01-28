@@ -23,19 +23,17 @@ public class PortfolioService : IPortfolioService
 
         await _portfolioRepository.AddAsync(newPortfolio);
 
-        await _portfolioRepository.SaveAsync();
+       
     }
 
-    public async Task RemovePortfolioAsync(Guid id)
+    public async Task DeletePortfolioAsync(Guid id)
     {
-        var portfolio = await _portfolioRepository.GetByIdAsync(id);
-        if(portfolio is null)
+         var deletedPortfolio = await _portfolioRepository.DeleteAsync(id);
+         if(deletedPortfolio is null)
         {
-            throw new Exception("Portfolio is not found");
+          throw new Exception("Portfolio not found.");
         }
-        _portfolioRepository.Remove(portfolio);
-
-        await _portfolioRepository.SaveAsync();
+       
 
     }
 
@@ -52,11 +50,7 @@ public class PortfolioService : IPortfolioService
     public async Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid userId)
     {
         var userPortfolios = await _portfolioRepository.Find(x => x.UserId == userId);
-       if (!userPortfolios.Any()) 
-    {
-        throw new Exception("No portfolio is found");
-    }
-        
+    
         return _mapper.Map<IEnumerable<PortfolioResponseDTO>>(userPortfolios);
 
     }
@@ -68,10 +62,10 @@ public class PortfolioService : IPortfolioService
         {
             throw new Exception("No portfolio is found");
         }
-        _mapper.Map(updatePortfolioDTO,portfolio);
+         _mapper.Map(updatePortfolioDTO,portfolio);
 
-         _portfolioRepository.Update(portfolio);
+         await _portfolioRepository.UpdateAsync(portfolio); 
 
-        await _portfolioRepository.SaveAsync();
+
     }
 }

@@ -24,19 +24,18 @@ public class TransactionService : ITransactionService
         
         await _transactionRepository.AddAsync(transaction);
 
-        await _transactionRepository.SaveAsync();
+       
     }
 
-    public async Task RemoveTransactionAsync(Guid id)
+    public async Task DeleteTransactionAsync(Guid id)
     {
-        var transaction = await _transactionRepository.GetByIdAsync(id);
-        if(transaction is null)
+        var deletedTransaction =await _transactionRepository.DeleteAsync(id);
+        if(deletedTransaction is null)
         {
-           throw new Exception("Transaction is not found");
+            throw new Exception("Transaction not found");
         }
-         _transactionRepository.Remove(transaction);
 
-         await _transactionRepository.SaveAsync();
+        
     }
 
     public async Task<TransactionResponseDTO> GetByIdAsync(Guid id)
@@ -52,12 +51,7 @@ public class TransactionService : ITransactionService
     public async Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId)
     {
       var portfolioTransactions = await _transactionRepository.Find(x=>x.PortfolioId==portfolioId);
-
-      if (!portfolioTransactions.Any()) 
-    {
-        throw new Exception("No transaction is found");
-    }
-        
+ 
        return _mapper.Map<IEnumerable<TransactionResponseDTO>>(portfolioTransactions);
 
 
@@ -72,8 +66,8 @@ public class TransactionService : ITransactionService
         }
          _mapper.Map(updateTransactionDTO,transaction);
 
-         _transactionRepository.Update(transaction);
+        await  _transactionRepository.UpdateAsync(transaction);
 
-         await _transactionRepository.SaveAsync();
+         
    }
 }

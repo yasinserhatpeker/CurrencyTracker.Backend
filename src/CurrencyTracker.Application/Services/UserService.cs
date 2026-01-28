@@ -25,29 +25,24 @@ public class UserService : IUserService
         var newUser = _mapper.Map<User>(createUserDTO);
         await _userRepository.AddAsync(newUser);
 
-        await _userRepository.SaveAsync();
-
+       
     }
 
-    public async Task RemoveUserAsync(Guid id)
+    public async Task DeleteUserAsync(Guid id)
     {
-        var user = await _userRepository.GetByIdAsync(id);
-        if(user is null)
+        var deletedUser = await _userRepository.DeleteAsync(id);
+        if(deletedUser is null)
         {
-            throw new Exception("User is not found");
+            throw new Exception("User not found");
         }
-         _userRepository.Remove(user);
 
-        await _userRepository.SaveAsync();
+       
     }
 
     public async Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync()
     {
         var users = await _userRepository.GetAllAsync();
-       if (!users.Any()) 
-    {
-        throw new Exception("No user is found");
-    }
+   
         return _mapper.Map<IEnumerable<UserResponseDTO>>(users);
         
     }
@@ -74,9 +69,8 @@ public class UserService : IUserService
         }
         _mapper.Map(updateUserDTO,user);
 
-        _userRepository.Update(user);
+        await _userRepository.UpdateAsync(user);
 
-        await _userRepository.SaveAsync();
 
     }
 }
