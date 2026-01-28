@@ -6,6 +6,7 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace CurrencyTracker.Application.Services;
 
@@ -15,6 +16,17 @@ public class AuthService : IAuthService
      private readonly IGenericRepository<User> _userRepository;
      
      private readonly IConfiguration _configuration;
+
+     public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration)
+    {
+        _mapper = mapper;
+        _userRepository = userRepository;
+        _configuration = configuration;
+    }
+    public Task<UserResponseDTO> RegisterUserAsync(CreateUserDTO createUserDTO)
+    {
+        throw new NotImplementedException();
+    }
     public Task<AuthResponseDTO> LoginUserAsync(LoginUserDTO loginUserDTO)
     {
         throw new NotImplementedException();
@@ -25,8 +37,4 @@ public class AuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    public Task<UserResponseDTO> RegisterUserAsync(CreateUserDTO createUserDTO)
-    {
-        throw new NotImplementedException();
-    }
 }
