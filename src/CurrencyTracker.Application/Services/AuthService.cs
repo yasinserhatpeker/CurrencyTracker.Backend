@@ -50,8 +50,15 @@ public class AuthService : IAuthService
         {
            throw new Exception("Invalid email or password.");
         }
+        return await GenerateAuthResponseAsync(user); // helper function for less code
+    }
+
+    public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
+    {
         
     }
+
+
 
     public Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
     {
