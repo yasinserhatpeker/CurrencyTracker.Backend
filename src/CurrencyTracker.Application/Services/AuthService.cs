@@ -1,6 +1,4 @@
-using System;
 using AutoMapper;
-using BCrypt.Net;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
@@ -53,6 +51,18 @@ public class AuthService : IAuthService
         return await GenerateAuthResponseAsync(user); // helper class for less code
     }
 
+    public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
+    {
+        var users= await _userRepository.Find(u=>u.RefreshToken == RefreshToken);
+         var user = users.FirstOrDefault();
+
+         if(user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        {
+            throw new Exception("The session is expired. Please try again");
+        }
+        return await GenerateAuthResponseAsync(user);
+    }
+
     public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
     {
         var accesToken = GenerateAccessToken(user);
@@ -70,16 +80,13 @@ public class AuthService : IAuthService
          };
 
     }
-    public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
+    private string GenerateAccessToken(User user)
     {
-        var users= await _userRepository.Find(u=>u.RefreshToken == RefreshToken);
-         var user = users.FirstOrDefault();
-
-         if(user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
-        {
-            throw new Exception("The session is expired. Please log in again");
-        }
-        return await GenerateAuthResponseAsync(user);
+        
+    }
+    private string GenerateRefreshToken()
+    {
+        
     }
 
 }
