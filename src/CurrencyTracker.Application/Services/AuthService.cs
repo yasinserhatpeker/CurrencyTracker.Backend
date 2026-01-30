@@ -16,12 +16,11 @@ namespace CurrencyTracker.Application.Services;
 
 public class AuthService : IAuthService
 {
-     private readonly IMapper _mapper;
-     private readonly IGenericRepository<User> _userRepository;
-     
-     private readonly IConfiguration _configuration;
+    private readonly IMapper _mapper;
+    private readonly IGenericRepository<User> _userRepository;
+    private readonly IConfiguration _configuration;
 
-     public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration)
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration)
     {
         _mapper = mapper;
         _userRepository = userRepository;
@@ -29,8 +28,8 @@ public class AuthService : IAuthService
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
-      var existingUsers = await _userRepository.Find(u=>u.Email == createUserDTO.Email);
-      if(existingUsers.Any())
+        var existingUsers = await _userRepository.Find(u => u.Email == createUserDTO.Email);
+        if (existingUsers.Any())
         {
             throw new Exception("This email is already used");
         }
@@ -38,7 +37,7 @@ public class AuthService : IAuthService
 
         //password hashing
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
-        user.AuthProvider="Local";
+        user.AuthProvider = "Local";
 
         await _userRepository.AddAsync(user);
         return _mapper.Map<UserResponseDTO>(user);
@@ -46,22 +45,22 @@ public class AuthService : IAuthService
     }
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
-        var users = await _userRepository.Find(u=>u.Email == loginUserDTO.Email);
+        var users = await _userRepository.Find(u => u.Email == loginUserDTO.Email);
         var user = users.FirstOrDefault();
 
-        if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
+        if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
         {
-           throw new Exception("Invalid email or password.");
+            throw new Exception("Invalid email or password.");
         }
         return await GenerateAuthResponseAsync(user); // helper method for less code
     }
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
     {
-        var users= await _userRepository.Find(u=>u.RefreshToken == RefreshToken);
-         var user = users.FirstOrDefault();
+        var users = await _userRepository.Find(u => u.RefreshToken == RefreshToken);
+        var user = users.FirstOrDefault();
 
-         if(user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        if (user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
         {
             throw new Exception("The session is expired. Please try again");
         }
@@ -72,17 +71,17 @@ public class AuthService : IAuthService
     {
         var accesToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
-        
+
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime=DateTime.UtcNow.AddDays(7); // 7-days refresh token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-days refresh token
 
-         await _userRepository.UpdateAsync(user);
+        await _userRepository.UpdateAsync(user);
 
-         return new AuthResponseDTO
-         {
-             AccessToken=accesToken,
-             RefreshToken=refreshToken
-         };
+        return new AuthResponseDTO
+        {
+            AccessToken = accesToken,
+            RefreshToken = refreshToken
+        };
 
     }
     private string GenerateAccessToken(User user)
@@ -96,16 +95,16 @@ public class AuthService : IAuthService
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
 
-        var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires:DateTime.UtcNow.AddMinutes(15),
-            signingCredentials:creds
+            expires: DateTime.UtcNow.AddMinutes(15),
+            signingCredentials: creds
   );
-         return new JwtSecurityTokenHandler().WriteToken(token);
+        return new JwtSecurityTokenHandler().WriteToken(token);
 
     }
     private string GenerateRefreshToken()
