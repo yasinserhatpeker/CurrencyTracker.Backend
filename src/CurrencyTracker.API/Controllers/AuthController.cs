@@ -1,6 +1,7 @@
+using System.Security.Cryptography;
 using CurrencyTracker.Application.DTOs;
+using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -30,7 +31,21 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-        
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginUserDTO loginUserDTO)
+        {
+            try
+            {
+                var result = await _authService.LoginAsync(loginUserDTO);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return Unauthorized(new{message=ex.Message});
+            }
+        }
+
+
 
     }
 }
