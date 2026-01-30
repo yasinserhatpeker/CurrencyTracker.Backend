@@ -73,7 +73,7 @@ public class AuthService : IAuthService
         var refreshToken = GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-days refresh token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-day refresh token
 
         await _userRepository.UpdateAsync(user);
 
@@ -90,7 +90,7 @@ public class AuthService : IAuthService
         {
           new Claim(JwtRegisteredClaimNames.Sub ,user.Id.ToString()),
           new Claim(JwtRegisteredClaimNames.Email, user.Email),
-          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // token-refreshing
 
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
@@ -101,7 +101,7 @@ public class AuthService : IAuthService
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15),
+            expires: DateTime.UtcNow.AddMinutes(15), // 15-minute access token
             signingCredentials: creds
   );
         return new JwtSecurityTokenHandler().WriteToken(token);
