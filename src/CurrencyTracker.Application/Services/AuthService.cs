@@ -90,7 +90,7 @@ public class AuthService : IAuthService
         {
           new Claim(JwtRegisteredClaimNames.Sub ,user.Id.ToString()),
           new Claim(JwtRegisteredClaimNames.Email, user.Email),
-          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // token-refreshing
+          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // token-refreshing with token ID
 
         };
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
@@ -101,7 +101,7 @@ public class AuthService : IAuthService
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15), // 15-minute access token
+            expires: DateTime.UtcNow.AddMinutes(10), // 15-minute access token
             signingCredentials: creds
   );
         return new JwtSecurityTokenHandler().WriteToken(token);
