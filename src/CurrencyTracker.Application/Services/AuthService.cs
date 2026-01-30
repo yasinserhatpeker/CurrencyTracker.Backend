@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
@@ -86,7 +87,13 @@ public class AuthService : IAuthService
     }
     private string GenerateRefreshToken()
     {
-        
+        var randomNumber = new byte[32];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
+            
+        }
     }
 
 }
