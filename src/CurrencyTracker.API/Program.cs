@@ -20,6 +20,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<IPortfolioService,PortfolioService>();
 builder.Services.AddScoped<ITransactionService,TransactionService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 
 
 

@@ -83,7 +83,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                await _userService.RemoveUserAsync(id);
+                await _userService.DeleteUserAsync(id);
                 return NoContent();
             }
             catch(Exception ex)

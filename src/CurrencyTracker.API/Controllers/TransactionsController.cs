@@ -69,7 +69,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                await _transactionService.RemoveTransactionAsync(id);
+                await _transactionService.DeleteTransactionAsync(id);
                 return NoContent();
             }
             catch(Exception ex)

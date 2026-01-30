@@ -94,9 +94,18 @@ public class AuthService : IAuthService
           new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 
         };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
 
         var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["JwtSettings:Issuer"],
+            audience: _configuration["JwtSettings:Audience"],
+            claims: claims,
+            expires:DateTime.UtcNow.AddMinutes(15),
+            signingCredentials:creds
+  );
+         return new JwtSecurityTokenHandler().WriteToken(token);
 
     }
     private string GenerateRefreshToken()

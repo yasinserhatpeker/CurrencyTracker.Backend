@@ -65,7 +65,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                await _portfolioService.RemovePortfolioAsync(id);
+                await _portfolioService.DeletePortfolioAsync(id);
                 return NoContent();
             }
             catch(Exception ex)
