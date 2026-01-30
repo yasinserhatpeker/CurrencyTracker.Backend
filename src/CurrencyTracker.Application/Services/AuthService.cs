@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
@@ -83,7 +85,13 @@ public class AuthService : IAuthService
     }
     private string GenerateAccessToken(User user)
     {
-        
+        var claims = new List<Claim>
+        {
+          new Claim(JwtRegisteredClaimNames.Sub ,user.Id.ToString()),
+          new Claim(JwtRegisteredClaimNames.Email, user.Email),
+          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+
+        };
     }
     private string GenerateRefreshToken()
     {
@@ -92,7 +100,7 @@ public class AuthService : IAuthService
         {
             rng.GetBytes(randomNumber);
             return Convert.ToBase64String(randomNumber);
-            
+
         }
     }
 
