@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
@@ -9,6 +10,7 @@ using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CurrencyTracker.Application.Services;
 
@@ -51,7 +53,7 @@ public class AuthService : IAuthService
         {
            throw new Exception("Invalid email or password.");
         }
-        return await GenerateAuthResponseAsync(user); // helper class for less code
+        return await GenerateAuthResponseAsync(user); // helper method for less code
     }
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
@@ -92,6 +94,10 @@ public class AuthService : IAuthService
           new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 
         };
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
+
+        var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);
+
     }
     private string GenerateRefreshToken()
     {
