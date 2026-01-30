@@ -101,7 +101,7 @@ public class AuthService : IAuthService
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(10), // 15-minute access token
+            expires: DateTime.UtcNow.AddMinutes(10), // 10-minute access token
             signingCredentials: creds
   );
         return new JwtSecurityTokenHandler().WriteToken(token);
