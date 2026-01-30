@@ -1,9 +1,7 @@
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
-using CurrencyTracker.Infrastructure.Migrations;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -53,7 +51,7 @@ namespace CurrencyTracker.API.Controllers
             try
             {
                 var result = await _authService.RefreshTokenAsync(RefreshToken);
-                return Ok(result)
+                return Ok(result);
 
             }
             catch(Exception ex)
@@ -62,7 +60,6 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-
-
+         
     }
 }
