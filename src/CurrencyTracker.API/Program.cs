@@ -18,12 +18,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
-builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IUserService,UserService>();
-builder.Services.AddScoped<IPortfolioService,PortfolioService>();
-builder.Services.AddScoped<ITransactionService,TransactionService>();
-builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPortfolioService, PortfolioService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -34,25 +34,18 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer=true,
+        ValidateIssuer = true,
         ValidateAudience = true,
-        ValidateLifetime=true,
-        ValidateIssuerSigningKey=true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
 
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
-
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]!)),
-
-        ClockSkew =TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero
     };
-    
+
 });
-
-
-
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -62,7 +55,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-  
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
