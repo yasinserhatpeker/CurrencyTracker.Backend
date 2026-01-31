@@ -1,5 +1,5 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -9,6 +9,15 @@ namespace CurrencyTracker.API.Controllers
     [Authorize]
     public class CustomBaseController : ControllerBase
     {
-        
+         protected Guid GetCurrentUserId()
+        {
+             var idClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+             if(Guid.TryParse(idClaim, out Guid userId))
+            {
+                 return userId;
+            }
+            throw new UnauthorizedAccessException("Token is invalid, user ID is not found");
+        }
     }
 }
