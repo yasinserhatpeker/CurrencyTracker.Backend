@@ -7,12 +7,14 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionsController : ControllerBase
+    public class TransactionsController : CustomBaseController
     {
         private readonly ITransactionService _transactionService;
-        public TransactionsController(ITransactionService transactionService)
+        private readonly IPortfolioService _portfolioService;
+        public TransactionsController(ITransactionService transactionService,IPortfolioService portfolioService)
         {
             _transactionService=transactionService;
+            _portfolioService=portfolioService;
         }
         [HttpPost]
         public async Task<IActionResult> Create(CreateTransactionsDTO createTransactionsDTO)
@@ -23,7 +25,10 @@ namespace CurrencyTracker.API.Controllers
             }
 
             try
-            {
+            { 
+                
+
+
                await _transactionService.CreateTransactionAsync(createTransactionsDTO);
                return Ok(new{message ="Transaction created succesfully!"});
             }
