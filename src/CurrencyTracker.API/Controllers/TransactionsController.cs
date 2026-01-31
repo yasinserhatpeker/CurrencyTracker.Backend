@@ -113,7 +113,7 @@ namespace CurrencyTracker.API.Controllers
              
             if (updateTransactionDTO.Id != id)
             {
-                return BadRequest("Transaction is not found");
+                return BadRequest("ID mismatch");
             }
             try
             {   

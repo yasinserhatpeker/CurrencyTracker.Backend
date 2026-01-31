@@ -41,7 +41,7 @@ public class TransactionService : ITransactionService
         var transaction = await _transactionRepository.GetByIdAsync(id);
         if(transaction is null)
         {
-            throw new Exception("Transaction is not found");
+            throw new KeyNotFoundException("Transaction is not found");
         }
         return _mapper.Map<TransactionResponseDTO>(transaction);
     }
@@ -60,7 +60,7 @@ public class TransactionService : ITransactionService
         var transaction = await _transactionRepository.GetByIdAsync(id);
         if(transaction is null)
         {
-            throw new Exception("No transaction is found");
+            throw new KeyNotFoundException("No transaction is found");
         }
          _mapper.Map(updateTransactionDTO,transaction);
 
