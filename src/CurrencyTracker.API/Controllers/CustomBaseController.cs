@@ -7,7 +7,7 @@ namespace CurrencyTracker.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CustomBaseController : ControllerBase
+    public abstract class CustomBaseController : ControllerBase
     {
          protected Guid GetCurrentUserId()
         {

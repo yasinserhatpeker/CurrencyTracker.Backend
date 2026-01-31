@@ -6,7 +6,7 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PortfoliosController : ControllerBase
+    public class PortfoliosController : CustomBaseController
     {
         private readonly IPortfolioService _portfolioService;
         public PortfoliosController(IPortfolioService portfolioService)
@@ -21,7 +21,8 @@ namespace CurrencyTracker.API.Controllers
             return BadRequest(ModelState);
 
             try
-            {
+            {   
+                createPortfolioDTO.UserId=GetCurrentUserId();
                 await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
                 return Ok(new{message = "Portfolio created succesfully!"});
             }
@@ -38,7 +39,13 @@ namespace CurrencyTracker.API.Controllers
             try
             {
                 var portfolio = await _portfolioService.GetByIdAsync(id);
+                if(portfolio.UserId != GetCurrentUserId())
+                {
+                    return Unauthorized(new{message="You have no right to see this portfolio"});
+                }
                 return Ok(portfolio);
+
+                
             }
         
           catch(Exception ex)
@@ -47,11 +54,12 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetPortfoliosByUser(Guid userId)
+        [HttpGet]
+        public async Task<IActionResult> GetMyPortfolios()
         {
             try
             {
+               var userId = GetCurrentUserId();
                var portfolios = await _portfolioService.GetPortfoliosByUserAsync(userId);
                return Ok(portfolios);
             }
@@ -64,7 +72,12 @@ namespace CurrencyTracker.API.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             try
-            {
+            {   
+                var portfolio = await _portfolioService.GetByIdAsync(id);
+                if(portfolio.Id != GetCurrentUserId())
+                {
+                    return Unauthorized(new{message ="You have no right to delete this portfolio"});
+                }
                 await _portfolioService.DeletePortfolioAsync(id);
                 return NoContent();
             }
@@ -82,7 +95,12 @@ namespace CurrencyTracker.API.Controllers
                 return BadRequest("ID mismatch");
             }
             try
-            {
+            {   
+                var portfolio = await _portfolioService.GetByIdAsync(id);
+                if(portfolio.UserId != GetCurrentUserId())
+                {
+                    return Unauthorized(new{message="You have no right to update this portfolio"});
+                }
                 await _portfolioService.UpdatePortfolioAsync(id,updatePortfolioDTO);
                 return Ok(new{message="Portfolio updated succesfully!"});
             }
