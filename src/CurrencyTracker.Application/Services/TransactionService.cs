@@ -30,7 +30,7 @@ public class TransactionService : ITransactionService
         var deletedTransaction =await _transactionRepository.DeleteAsync(id);
         if(deletedTransaction is null)
         {
-            throw new Exception("Transaction not found");
+            throw new KeyNotFoundException("Transaction not found");
         }
 
         
