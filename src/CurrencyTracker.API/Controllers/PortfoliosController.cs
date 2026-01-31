@@ -74,7 +74,7 @@ namespace CurrencyTracker.API.Controllers
             try
             {   
                 var portfolio = await _portfolioService.GetByIdAsync(id);
-                if(portfolio.Id != GetCurrentUserId())
+                if(portfolio.UserId != GetCurrentUserId())
                 {
                     return Unauthorized(new{message ="You have no right to delete this portfolio"});
                 }
