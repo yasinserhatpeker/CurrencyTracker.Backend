@@ -31,7 +31,7 @@ public class PortfolioService : IPortfolioService
          var deletedPortfolio = await _portfolioRepository.DeleteAsync(id);
          if(deletedPortfolio is null)
         {
-          throw new Exception("Portfolio not found.");
+          throw new KeyNotFoundException("Portfolio not found.");
         }
        
 
@@ -42,7 +42,7 @@ public class PortfolioService : IPortfolioService
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
         if(portfolio is null)
         {
-            throw new Exception("Portfolio is not found");
+            throw new KeyNotFoundException("Portfolio is not found");
         }
         return _mapper.Map<PortfolioResponseDTO>(portfolio);
     }
@@ -60,7 +60,7 @@ public class PortfolioService : IPortfolioService
        var portfolio = await _portfolioRepository.GetByIdAsync(id);
        if(portfolio is null)
         {
-            throw new Exception("No portfolio is found");
+            throw new KeyNotFoundException("No portfolio is found");
         }
          _mapper.Map(updatePortfolioDTO,portfolio);
 
