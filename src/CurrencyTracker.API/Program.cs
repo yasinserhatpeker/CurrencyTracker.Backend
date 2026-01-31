@@ -47,7 +47,6 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen(c =>
 {
    
@@ -55,7 +54,7 @@ builder.Services.AddSwaggerGen(c =>
     { 
         Title = "CurrencyTracker API", 
         Version = "v1",
-        Description = "API Dokümantasyonu"
+        Description = "API Documentation"
     });
 
     
