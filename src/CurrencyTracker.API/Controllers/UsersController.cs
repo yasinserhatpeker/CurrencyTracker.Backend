@@ -1,4 +1,3 @@
-using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,51 +6,20 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : CustomBaseController
     {
         private readonly IUserService _userService;
         public UsersController(IUserService userService)
         {
             _userService=userService;
         }
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateUserDTO createUserDTO)
-        {
-            if(!ModelState.IsValid)
-            return BadRequest(ModelState);
-
-            try
-            {
-                await _userService.CreateUserAsync(createUserDTO);
-                return Ok (new {message ="User created succesfully"});
-            }
-            catch(Exception ex)
-            {
-                return BadRequest (new {message = ex.Message});
-            }
-        } 
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+    
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMyProfile()
         {
             try
-            {
-              var users = await _userService.GetAllUsersAsync();
-              return Ok(users);
-
-            }
-            catch(Exception ex)
-            {
-                return NotFound (new{message =ex.Message});
-            }
-
-        }
-          [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-        {
-            try
-            {
-                var user = await _userService.GetByIdAsync(id);
+            {   var userId = GetCurrentUserId();
+                var user = await _userService.GetByIdAsync(userId);
                 return Ok(user);
             }
             catch(Exception ex)
@@ -60,16 +28,15 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-       [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDTO updateUserDTO)
+       [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateUserDTO updateUserDTO)
         {
-            if(id != updateUserDTO.Id)
-            {
-                return BadRequest("ID mismatch.");
-            }
+           
            try
-            {
-                 await _userService.UpdateUserAsync(id,updateUserDTO);
+            {    
+                var userId = GetCurrentUserId();
+                updateUserDTO.Id=userId;
+                 await _userService.UpdateUserAsync(userId,updateUserDTO);
                  return Ok(new {message = "User updated succesfully!"});
             } 
             catch(Exception ex)
@@ -78,12 +45,13 @@ namespace CurrencyTracker.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
         {
             try
-            {
-                await _userService.DeleteUserAsync(id);
+            {   
+                var userId=GetCurrentUserId();
+                await _userService.DeleteUserAsync(userId);
                 return NoContent();
             }
             catch(Exception ex)
