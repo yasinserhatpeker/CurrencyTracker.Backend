@@ -43,6 +43,8 @@ public class AuthService : IAuthService
         return _mapper.Map<UserResponseDTO>(user);
 
     }
+
+    
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
         var users = await _userRepository.Find(u => u.Email == loginUserDTO.Email);
