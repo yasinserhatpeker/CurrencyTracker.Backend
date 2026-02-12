@@ -11,7 +11,10 @@ namespace CurrencyTracker.API.Controllers
         private readonly IPortfolioService _portfolioService;
         public PortfoliosController(IPortfolioService portfolioService)
         {
-            _portfolioService = portfolioService;
+           _portfolioService = portfolioService;
+          
+           
+
         }
         
 
