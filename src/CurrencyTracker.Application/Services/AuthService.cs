@@ -31,7 +31,7 @@ public class AuthService : IAuthService
         var existingUsers = await _userRepository.Find(u => u.Email == createUserDTO.Email);
         if (existingUsers.Any())
         {
-            throw new Exception("This email is already used");
+            throw new KeyNotFoundException("This email is already used");
         }
         var user = _mapper.Map<User>(createUserDTO);
 
@@ -43,6 +43,8 @@ public class AuthService : IAuthService
         return _mapper.Map<UserResponseDTO>(user);
 
     }
+
+    
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
         var users = await _userRepository.Find(u => u.Email == loginUserDTO.Email);
@@ -50,7 +52,7 @@ public class AuthService : IAuthService
 
         if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
         {
-            throw new Exception("Invalid email or password.");
+            throw new KeyNotFoundException("Invalid email or password.");
         }
         return await GenerateAuthResponseAsync(user); // helper method for less code
     }
@@ -62,7 +64,7 @@ public class AuthService : IAuthService
 
         if (user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
         {
-            throw new Exception("The session is expired. Please try again");
+            throw new KeyNotFoundException("The session is expired. Please try again");
         }
         return await GenerateAuthResponseAsync(user);
     }
