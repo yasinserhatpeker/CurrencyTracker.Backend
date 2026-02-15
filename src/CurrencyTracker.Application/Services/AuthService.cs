@@ -120,4 +120,8 @@ public class AuthService : IAuthService
         }
     }
 
+    public Task<AuthResponseDTO> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO)
+    {
+        throw new NotImplementedException();
+    }
 }
