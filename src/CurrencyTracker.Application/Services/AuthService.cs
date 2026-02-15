@@ -128,16 +128,26 @@ public class AuthService : IAuthService
 
         try
         {
-            var clientId = _configuration["GoogleAuthSettings:ClientId"]; // get the clientId from configuration
+            var clientId = _configuration["GoogleAuthSettings:ClientId"]; // get the clientId from 
+            // configuration
+            if(string.IsNullOrEmpty(clientId))
+            {
+                throw new Exception("Google clientID is missing in the configuration!");
+            }
+
             
             var settings = new GoogleJsonWebSignature.ValidationSettings() 
             {
                 Audience = new List<string>() {clientId!}  // we get the clientId for auth
             };
 
-            payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken,settings); 
+            payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken,settings);
+             
             // validating the token 
-
+            if(!payload.EmailVerified)
+            {
+                throw new Exception("Please verify your Google email before logging in");
+            }
             // if invalid throw a exception
 
         } 
@@ -149,7 +159,7 @@ public class AuthService : IAuthService
         var users = await _userRepository.Find(u => u.Email == payload.Email);
         var existingUser = users.FirstOrDefault(); // check if the user exists in the DB
 
-        if(existingUser!=null)
+        if(existingUser != null)
         {
             return await GenerateAuthResponseAsync(existingUser); // returns the existing user to generate token
         }

@@ -1,4 +1,5 @@
 using CurrencyTracker.Application.DTOs;
+using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 
@@ -57,6 +58,24 @@ namespace CurrencyTracker.API.Controllers
             catch(Exception ex)
             {
                 return Unauthorized(new{message=ex.Message});
+            }
+        }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO googleLoginDTO)
+        {
+            try
+            {
+                var result = await _authService.GoogleLoginAsync(googleLoginDTO);
+                return Ok(result);
+            }
+            catch(KeyNotFoundException ex)
+            {
+               return BadRequest(new{message=ex.Message});
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500,new { message="An error occured during login session", detail =ex.Message});
             }
         }
 
