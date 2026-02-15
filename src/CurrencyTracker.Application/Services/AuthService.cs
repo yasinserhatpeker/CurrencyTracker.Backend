@@ -9,8 +9,10 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+
 
 namespace CurrencyTracker.Application.Services;
 
@@ -122,6 +124,11 @@ public class AuthService : IAuthService
 
     public Task<AuthResponseDTO> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO)
     {
-        throw new NotImplementedException();
+        GoogleJsonWebSignature.Payload payload;
+
+        try
+        {
+            
+        }
     }
 }
