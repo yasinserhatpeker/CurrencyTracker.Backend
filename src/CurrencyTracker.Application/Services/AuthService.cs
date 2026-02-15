@@ -128,14 +128,17 @@ public class AuthService : IAuthService
 
         try
         {
-            var clientId = _configuration["GoogleAuthSettings:ClientId"]; // get the clientId from config
+            var clientId = _configuration["GoogleAuthSettings:ClientId"]; // get the clientId from configuration
             
             var settings = new GoogleJsonWebSignature.ValidationSettings() 
             {
-                Audience = new List<string>() {clientId!}  // we get only the clientId for SPA
+                Audience = new List<string>() {clientId!}  // we get the clientId for auth
             };
 
-            payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken,settings); // validating the token // if invalid throw a exception
+            payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken,settings); 
+            // validating the token 
+
+            // if invalid throw a exception
 
         } 
         catch(InvalidJwtException)
@@ -148,7 +151,7 @@ public class AuthService : IAuthService
 
         if(existingUser!=null)
         {
-            return await GenerateAuthResponseAsync(existingUser); // returns the existing user to log in(generate token)
+            return await GenerateAuthResponseAsync(existingUser); // returns the existing user to generate token
         }
 
         // if there's no user create one
