@@ -101,13 +101,14 @@ public class AuthService : IAuthService
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var token = new JwtSecurityToken(
+        var token = new JwtSecurityToken
+        (
             issuer: _configuration["JwtSettings:Issuer"],
             audience: _configuration["JwtSettings:Audience"],
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(10), // 10-minute access token
             signingCredentials: creds
-  );
+        );
         return new JwtSecurityTokenHandler().WriteToken(token);
 
     }
