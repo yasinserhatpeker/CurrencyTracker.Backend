@@ -149,6 +149,10 @@ public class AuthService : IAuthService
             {
                 throw new Exception("Please verify your Google email before logging in");
             }
+             if(payload.Issuer != "https://accounts.google.com" && payload.Issuer != "accounts.google.com")
+            {
+                throw new Exception("Invalid payload issuer");
+            }
             // if invalid throw a exception
 
         } 
@@ -156,7 +160,7 @@ public class AuthService : IAuthService
         {
             throw new KeyNotFoundException("Invalid Google token");
         }
-
+         
         var users = await _userRepository.Find(u => u.Email == payload.Email);
         var existingUser = users.FirstOrDefault(); // check if the user exists in the DB
 
