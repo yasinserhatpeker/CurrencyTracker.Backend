@@ -160,11 +160,22 @@ public class AuthService : IAuthService
         {
             throw new KeyNotFoundException("Invalid Google token");
         }
-         
-        var users = await _userRepository.Find(u => u.Email == payload.Email);
-        var existingUser = users.FirstOrDefault(); // check if the user exists in the DB
+        
+        var users = await _userRepository.Find(u => u.GoogleId == payload.Subject);
+        var existingUser = users.FirstOrDefault();  // check if the user exists in the DB
 
-        if(existingUser != null)
+        if(existingUser is null)
+        {
+            existingUser = (await _userRepository.Find(u=>u.Email == payload.Email)).FirstOrDefault();
+            
+            if(existingUser is not null)
+            {
+                existingUser.GoogleId=payload.Subject;
+                await _userRepository.UpdateAsync(existingUser);   
+            }
+        }
+
+        if(existingUser is not null)
         {
             return await GenerateAuthResponseAsync(existingUser); // returns the existing user to generate token
         }
@@ -176,7 +187,8 @@ public class AuthService : IAuthService
             {   Id = Guid.NewGuid(),     // random Guid ID
                 Email = payload.Email,   // using the Google email
                 Username = payload.Name, // using the Google name e.g "Y. Serhat Peker"
-                AuthProvider = "Google",  // mark them as a google user
+                AuthProvider = "Google",
+                GoogleId = payload.Subject,  // mark them as a google user
             
                // generate a random strong password hash because DB use it
                // they never use this password, they will use google
