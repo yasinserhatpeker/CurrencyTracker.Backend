@@ -2,14 +2,14 @@ using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : CustomBaseController
     {
         private readonly IAuthService _authService;
 
@@ -77,6 +77,17 @@ namespace CurrencyTracker.API.Controllers
             {
                 return StatusCode(500,new { message="An error occured during login session", detail =ex.Message});
             }
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {    
+            var userId = GetCurrentUserId();
+            await _authService.LogoutAsync(userId);
+
+            return Ok(new{message = "Logged out successfully"});
+
         }
 
          
