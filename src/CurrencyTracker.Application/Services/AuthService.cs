@@ -209,16 +209,15 @@ public class AuthService : IAuthService
     public async Task LogoutAsync(Guid userId)
     {
        var user = await _userRepository.GetByIdAsync(userId);
-       if(user is null)
+       if(user is not null)
         {
-            throw new Exception("User is not found");
-        }
-
-        user.RefreshToken=null;
-        user.RefreshTokenExpiryTime=null;
+            
+           user!.RefreshToken=null;
+            user.RefreshTokenExpiryTime=null;
 
         await _userRepository.UpdateAsync(user);
-        
+         }
+
        
     }
 }
