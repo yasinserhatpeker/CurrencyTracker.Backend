@@ -205,4 +205,10 @@ public class AuthService : IAuthService
 
 
     }
+
+    public async Task<AuthResponseDTO> LogoutAsync(Guid userId)
+    {
+       var user = await _userRepository.GetByIdAsync(userId);
+       
+    }
 }
