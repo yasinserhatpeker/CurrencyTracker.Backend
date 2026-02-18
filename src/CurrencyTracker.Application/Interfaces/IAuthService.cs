@@ -12,6 +12,5 @@ public interface IAuthService
     Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken); // new refresh token generate
     Task<AuthResponseDTO> GoogleLoginAsync (GoogleLoginDTO googleLoginDTO); // OAuth2.0 Google entegration 
 
-    
 
 }

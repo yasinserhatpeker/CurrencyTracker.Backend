@@ -60,11 +60,12 @@ public class AuthService : IAuthService
     }
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
-    {
-        var users = await _userRepository.Find(u => u.RefreshToken == RefreshToken);
+    {   
+        var hashed = HashToken(RefreshToken);
+        var users = await _userRepository.Find(u => u.RefreshTokenHash == hashed);
         var user = users.FirstOrDefault();
 
-        if (user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        if (user is null || user.RefreshTokenExpiryTime is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
         {
             throw new KeyNotFoundException("The session is expired. Please try again");
         }
@@ -75,8 +76,8 @@ public class AuthService : IAuthService
     {
         var accesToken = GenerateAccessToken(user);
         var refreshToken = GenerateRefreshToken();
-
-        user.RefreshToken = refreshToken;
+        user.RefreshTokenHash = HashToken(refreshToken);
+       
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-day refresh token
 
         await _userRepository.UpdateAsync(user);
@@ -119,7 +120,7 @@ public class AuthService : IAuthService
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
+            return Base64UrlEncoder.Encode(randomNumber);
 
         }
     }
@@ -212,7 +213,7 @@ public class AuthService : IAuthService
        var user = await _userRepository.GetByIdAsync(userId);
        if(user is not null)
         {
-            user.RefreshToken=null;
+            user.RefreshTokenHash=null;
             user.RefreshTokenExpiryTime=null;
 
         await _userRepository.UpdateAsync(user);
@@ -220,4 +221,13 @@ public class AuthService : IAuthService
 
        
     }
+    private string HashToken(string token)
+    {
+        using var sha = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(token);
+        var hash = sha.ComputeHash(bytes);
+        return Convert.ToBase64String(hash);
+    }
+
+    
 }
