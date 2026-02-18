@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    
     [Authorize]
     public abstract class CustomBaseController : ControllerBase
     {

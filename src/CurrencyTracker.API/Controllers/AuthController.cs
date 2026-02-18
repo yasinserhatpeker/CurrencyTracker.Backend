@@ -9,6 +9,7 @@ namespace CurrencyTracker.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class AuthController : CustomBaseController
     {
         private readonly IAuthService _authService;
@@ -19,6 +20,7 @@ namespace CurrencyTracker.API.Controllers
         }
         
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] CreateUserDTO createUserDTO)
         {
             try
@@ -33,6 +35,7 @@ namespace CurrencyTracker.API.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserDTO loginUserDTO)
         {
             try
@@ -47,6 +50,7 @@ namespace CurrencyTracker.API.Controllers
         }
 
         [HttpPost("refreshToken")]
+        [AllowAnonymous]
         public async Task<IActionResult> RefreshToken([FromBody] string RefreshToken)
         {
             try
@@ -62,6 +66,7 @@ namespace CurrencyTracker.API.Controllers
         }
 
         [HttpPost("google-login")]
+        [AllowAnonymous]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDTO googleLoginDTO)
         {
             try
@@ -80,7 +85,7 @@ namespace CurrencyTracker.API.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
+        
         public async Task<IActionResult> Logout()
         {    
             var userId = GetCurrentUserId();
