@@ -51,11 +51,11 @@ namespace CurrencyTracker.API.Controllers
 
         [HttpPost("refreshToken")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshToken([FromBody] string RefreshToken)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDTO refreshTokenDTO)
         {
             try
             {
-                var result = await _authService.RefreshTokenAsync(RefreshToken);
+                var result = await _authService.RefreshTokenAsync(refreshTokenDTO.RefreshToken);
                 return Ok(result);
 
             }
