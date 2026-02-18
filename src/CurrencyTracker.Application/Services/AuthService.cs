@@ -213,7 +213,7 @@ public class AuthService : IAuthService
        if(user is not null)
         {
             
-           user!.RefreshToken=null;
+            user.RefreshToken=null;
             user.RefreshTokenExpiryTime=null;
 
         await _userRepository.UpdateAsync(user);
