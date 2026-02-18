@@ -3,6 +3,7 @@ using System;
 using CurrencyTracker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CurrencyTracker.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260218190614_RemoveRefreshToken")]
+    partial class RemoveRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,6 +137,7 @@ namespace CurrencyTracker.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("GoogleId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
@@ -149,11 +153,11 @@ namespace CurrencyTracker.Infrastructure.Migrations
                     b.Property<string>("RefreshTokenHash")
                         .HasColumnType("text");
 
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("ResetPasswordTokenExpiryTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ResetPasswordTokenHash")
-                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
