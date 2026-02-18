@@ -1,11 +1,11 @@
-using System;
-
 namespace CurrencyTracker.Domain.Entities;
 
 public class User : BaseEntity
 {
     public string Username { get; set; } = string.Empty;
-    public string PasswordHash { get; set; } = string.Empty;  
+    public string PasswordHash { get; set; } = string.Empty;
+    public string? ResetPasswordToken {get;set;}
+    public DateTime? ResetPasswordTokenExpiryTime{get;set;}
     public string AuthProvider { get; set; } = default!;
     public string GoogleId {get;set;} = default!;
     public string? RefreshToken { get; set; }
