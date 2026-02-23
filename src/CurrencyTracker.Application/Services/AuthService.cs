@@ -1,3 +1,4 @@
+using System.CodeDom;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -255,16 +256,22 @@ public class AuthService : IAuthService
 
     public async Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
     {
-        var hashed = HashToken(resetPasswordDTO.ResetPasswordToken);
-        var users = await _userRepository.Find(u=>u.ResetPasswordTokenHash == hashed);
+        var hashed = HashToken(resetPasswordDTO.ResetPasswordToken); // fetching hashed token
+        var users = await _userRepository.Find(u=>u.ResetPasswordTokenHash == hashed); // checking if the token hashed
         var user = users.FirstOrDefault();
         
-        if(user is null)
+        if(user is null || user.ResetPasswordTokenExpiryTime < DateTime.UtcNow)
         {
-            return;
+            throw new Exception("Invalid or expired password reset token");
         }
-        
 
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPasswordDTO.NewPassword); // hashing the new password with BCrypt 
+
+        user.ResetPasswordTokenHash=null; // preventing token reuse
+        user.ResetPasswordTokenExpiryTime=null;
+
+        await _userRepository.UpdateAsync(user);
+        
     }
 
     public Task EmailVerificationAsync(string token)
