@@ -219,9 +219,6 @@ public class AuthService : IAuthService
         await _userRepository.UpdateAsync(user);
          }
 
-        
-
-        
     }
     private string HashToken(string token)
     {
@@ -256,9 +253,18 @@ public class AuthService : IAuthService
         ); 
     }
 
-    public Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
+    public async Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
     {
-        throw new NotImplementedException();
+        var hashed = HashToken(resetPasswordDTO.ResetPasswordToken);
+        var users = await _userRepository.Find(u=>u.ResetPasswordTokenHash == hashed);
+        var user = users.FirstOrDefault();
+        
+        if(user is null)
+        {
+            return;
+        }
+        
+
     }
 
     public Task EmailVerificationAsync(string token)
