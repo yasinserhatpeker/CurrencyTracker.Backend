@@ -75,7 +75,7 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
     {
         var accesToken = GenerateAccessToken(user);
-        var refreshToken = GenerateRefreshToken();
+        var refreshToken = GenerateSecureToken();
         user.RefreshTokenHash = HashToken(refreshToken);
        
         user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-day refresh token
@@ -114,7 +114,7 @@ public class AuthService : IAuthService
         return new JwtSecurityTokenHandler().WriteToken(token);
 
     }
-    private string GenerateRefreshToken()
+    private string GenerateSecureToken()
     {
         var randomNumber = new byte[32];
         using (var rng = RandomNumberGenerator.Create())
@@ -227,5 +227,18 @@ public class AuthService : IAuthService
         return Convert.ToBase64String(hash);
     }
 
-    
+    public Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task EmailVerificationAsync(string token)
+    {
+        throw new NotImplementedException();
+    }
 }
