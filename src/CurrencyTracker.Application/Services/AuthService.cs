@@ -21,12 +21,14 @@ public class AuthService : IAuthService
     private readonly IMapper _mapper;
     private readonly IGenericRepository<User> _userRepository;
     private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
 
-    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration)
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _configuration = configuration;
+        _emailService = emailService;
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
@@ -227,9 +229,29 @@ public class AuthService : IAuthService
         return Convert.ToBase64String(hash);
     }
 
-    public Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO)
+    public async Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO)
     {
-        throw new NotImplementedException();
+       var users = await _userRepository.Find(u=>u.Email == forgotPasswordDTO.Email);
+       var user = users.FirstOrDefault();
+       if(user is null)
+        {
+           return; // returning silently so email enumeration attacks can be prevented
+        }
+        var token = GenerateSecureToken(); // generating 32-byte token with RandomNumberGenerator
+        var hashedToken = HashToken(token); // hashing the token with SHA256
+
+        user.ResetPasswordTokenHash = hashedToken;  // implementing DB
+        user.ResetPasswordTokenExpiryTime = DateTime.UtcNow.AddMinutes(15);
+
+        await _userRepository.UpdateAsync(user);
+
+        var resetLink = $"http://localhost:5172/api/auth/reset-password?token={token}"; // reset-link to reset your password
+
+        await _emailService.SendEmailAsync(
+            to:user.Email,
+            subject:"Password reset request",
+            body:$"Click the link to reset your password:{resetLink}"
+        ); 
     }
 
     public Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
