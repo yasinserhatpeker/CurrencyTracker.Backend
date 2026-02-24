@@ -22,13 +22,15 @@ public class AuthService : IAuthService
     private readonly IGenericRepository<User> _userRepository;
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
+    private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
 
-    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService)
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService, IGenericRepository<RefreshToken> refreshTokenRepository)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _configuration = configuration;
         _emailService = emailService;
+        _refreshTokenRepository = refreshTokenRepository;
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
@@ -306,5 +308,10 @@ public class AuthService : IAuthService
         await _userRepository.UpdateAsync(user);
         return true;
         
+    }
+
+    public Task LogoutAsync(string RefreshToken)
+    {
+        throw new NotImplementedException();
     }
 }
