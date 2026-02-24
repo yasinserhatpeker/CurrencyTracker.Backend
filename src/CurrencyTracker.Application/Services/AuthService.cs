@@ -44,8 +44,21 @@ public class AuthService : IAuthService
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
         user.AuthProvider = "Local";
 
-        await _userRepository.AddAsync(user);
-        return _mapper.Map<UserResponseDTO>(user);
+        var token = GenerateSecureToken(); // generating token with randomNumberGenerator
+        user.EmailVerificationTokenHash = HashToken(token); // hashing with SHA256
+
+        await _userRepository.AddAsync(user); // adding to the DB
+         
+        var verificationLink =$"http://localhost/api/auth/verify-email?token={token}"; // verification-link
+
+        await _emailService.SendEmailAsync(
+            to:user.Email,
+            subject:"Email verification",
+            body:$"Click the link to verify your email:{verificationLink}"
+
+        );
+
+        return _mapper.Map<UserResponseDTO>(user); // mapping with autoMapper
 
     }
 
