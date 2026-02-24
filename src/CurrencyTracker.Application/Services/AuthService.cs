@@ -81,17 +81,17 @@ public class AuthService : IAuthService
         return await GenerateAuthResponseAsync(user);
     }
 
-    public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
+    public async Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO)
     {   
-        var hashed = HashToken(RefreshToken);
-        var users = await _userRepository.Find(u => u.RefreshTokenHash == hashed);
-        var user = users.FirstOrDefault();
+        var hashed = HashToken(refreshTokenDTO.RefreshToken);
+        var refreshTokens = await _refreshTokenRepository.Find(u=>u.HashToken == hashed);
+        var refreshToken = refreshTokens.FirstOrDefault();
 
-        if (user is null || user.RefreshTokenExpiryTime is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
+        if (refreshToken is null || refreshToken.ExpiryTime is null || refreshToken.ExpiryTime < DateTime.UtcNow)
         {
             throw new KeyNotFoundException("The session is expired. Please try again");
         }
-        return await GenerateAuthResponseAsync(user);
+        return await GenerateAuthResponseAsync(refreshToken);
     }
 
     public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
