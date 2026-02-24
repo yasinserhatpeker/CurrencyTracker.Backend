@@ -274,8 +274,19 @@ public class AuthService : IAuthService
         
     }
 
-    public Task EmailVerificationAsync(string token)
+    public async Task<bool> EmailVerificationAsync(string token)
     {
-        throw new NotImplementedException();
+        var hashed = HashToken(token);
+        var users = await _userRepository.Find(u=>u.EmailVerificationTokenHash == hashed);
+        var user = users.FirstOrDefault();
+        if(user is null)
+        {
+            return false;
+        }
+        user.IsEmailVerified=true;
+        user.EmailVerificationTokenHash=null;
+        await _userRepository.UpdateAsync(user);
+        return true;
+        
     }
 }

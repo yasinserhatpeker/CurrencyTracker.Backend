@@ -13,7 +13,7 @@ public interface IAuthService
     Task<AuthResponseDTO> GoogleLoginAsync (GoogleLoginDTO googleLoginDTO); // OAuth2.0 Google entegration 
     Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO); // forgot my password
     Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO);   // reset password
-    Task EmailVerificationAsync(string token);  // email verification
+    Task<bool> EmailVerificationAsync(string token);  // email verification
 
 
 
