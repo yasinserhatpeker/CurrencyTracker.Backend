@@ -46,6 +46,7 @@ public class AuthService : IAuthService
 
         var token = GenerateSecureToken(); // generating token with randomNumberGenerator
         user.EmailVerificationTokenHash = HashToken(token); // hashing with SHA256
+        user.IsEmailVerified = true; // ensure they are locked out until they verify
 
         await _userRepository.AddAsync(user); // adding to the DB
          
