@@ -19,6 +19,7 @@ public class User : BaseEntity
     
     public string Email { get; set; } = string.Empty;
     public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
+    public ICollection<RefreshToken> RefreshTokens {get;set;} = new List<RefreshToken>();
 
 }
 
