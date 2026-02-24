@@ -45,7 +45,7 @@ public class AuthService : IAuthService
 
         var token = GenerateSecureToken(); // generating token with randomNumberGenerator
         user.EmailVerificationTokenHash = HashToken(token); // hashing with SHA256
-        user.IsEmailVerified = true; // ensure they are locked out until they verify
+        user.IsEmailVerified = false; // ensure they are locked out until they verify
 
         await _userRepository.AddAsync(user); // adding to the DB
          
@@ -209,8 +209,9 @@ public class AuthService : IAuthService
             {   Id = Guid.NewGuid(),     // random Guid ID
                 Email = payload.Email,   // using the Google email
                 Username = payload.Name, // using the Google name e.g "Y. Serhat Peker"
-                AuthProvider = "Google",
-                GoogleId = payload.Subject,  // mark them as a google user
+                AuthProvider = "Google",  // mark them as a google user
+                GoogleId = payload.Subject,
+                IsEmailVerified=true, 
             
                // generate a random strong password hash because DB use it
                // they never use this password, they will use google
