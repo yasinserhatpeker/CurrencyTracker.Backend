@@ -1,4 +1,3 @@
-using System.CodeDom;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -66,14 +65,18 @@ public class AuthService : IAuthService
     
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
-        var users = await _userRepository.Find(u => u.Email == loginUserDTO.Email);
+        var users = await _userRepository.Find(u=>u.Email == loginUserDTO.Email);
         var user = users.FirstOrDefault();
 
-        if (user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash))
+        if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash)) 
         {
-            throw new KeyNotFoundException("Invalid email or password.");
+            throw new KeyNotFoundException("Email or password is invalid");
         }
-        return await GenerateAuthResponseAsync(user); // helper method for less code
+        if(!user.IsEmailVerified)
+        {
+            throw new UnauthorizedAccessException("Please verify your email before logging in.");
+        }
+        return await GenerateAuthResponseAsync(user);
     }
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(string RefreshToken)
