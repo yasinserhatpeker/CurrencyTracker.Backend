@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
@@ -120,8 +120,24 @@ namespace CurrencyTracker.API.Controllers
             {
                 return BadRequest(new{message=ex.Message});
             }
-            
+
         }
-         
+         [HttpPost("forgot-password")]
+         [AllowAnonymous]
+         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO forgotPasswordDTO)
+        {
+            try
+            {
+                await _authService.ForgotPasswordAsync(forgotPasswordDTO);
+                return Ok(new{message="If your email is registered, reset link has been sent."});
+                
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500,new{message ="There's an error occured during the process.", detail =ex.Message});
+            }
+        }    
+
+            
     }
 }
