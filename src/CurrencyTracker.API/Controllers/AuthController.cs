@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
@@ -13,10 +14,12 @@ namespace CurrencyTracker.API.Controllers
     public class AuthController : CustomBaseController
     {
         private readonly IAuthService _authService;
+        
 
         public AuthController(IAuthService authService)
         {
             _authService=authService;
+          
         }
         
         [HttpPost("register")]
@@ -94,9 +97,31 @@ namespace CurrencyTracker.API.Controllers
             return Ok(new{message = "Logged out successfully"});
 
         }
-        
-
-
+         
+        [HttpGet("verify-email")]
+        [AllowAnonymous]
+        public async Task<IActionResult> VerifyEmail([FromQuery] string token)
+        {
+            try
+            {
+                var IsEmailVerified =await _authService.EmailVerificationAsync(token);
+                if(IsEmailVerified)
+                {
+                    return Ok(new{message="Your email is verified, you can now log in."});
+                }
+                else
+                {
+                    return BadRequest(new{message="Please verify your email before log in."});
+                
+                }
+                
+            }
+             catch(Exception ex)
+            {
+                return BadRequest(new{message=ex.Message});
+            }
+            
+        }
          
     }
 }
