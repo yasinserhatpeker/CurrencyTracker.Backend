@@ -327,8 +327,5 @@ public class AuthService : IAuthService
         
     }
 
-    public Task LogoutAsync(string RefreshToken)
-    {
-        throw new NotImplementedException();
-    }
+  
 }
