@@ -91,7 +91,14 @@ public class AuthService : IAuthService
         {
             throw new KeyNotFoundException("The session is expired. Please try again");
         }
-        return await GenerateAuthResponseAsync(refreshToken);
+
+        var user = await _userRepository.GetByIdAsync(refreshToken.UserId);
+        if(user is null)
+        {
+            throw new KeyNotFoundException("Cannot retrieve user");
+        }
+
+        return await GenerateAuthResponseAsync(user);
     }
 
     public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
