@@ -98,6 +98,8 @@ public class AuthService : IAuthService
             throw new KeyNotFoundException("Cannot retrieve user");
         }
 
+        
+
         return await GenerateAuthResponseAsync(user);
     }
 
@@ -114,6 +116,8 @@ public class AuthService : IAuthService
             UserId = user.Id // connecting with the userId
            
         };
+
+        await _refreshTokenRepository.AddAsync(newSession);
 
         return new AuthResponseDTO
         {
