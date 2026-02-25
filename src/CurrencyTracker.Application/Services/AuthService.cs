@@ -98,9 +98,6 @@ public class AuthService : IAuthService
             throw new KeyNotFoundException("Cannot retrieve user");
         }
          
-       
-        
-
         return await GenerateAuthResponseAsync(user);
     }
 
@@ -245,16 +242,21 @@ public class AuthService : IAuthService
 
     }
 
-    public async Task LogoutAsync(Guid userId)
+    public async Task LogoutAsync(RefreshTokenDTO refreshTokenDTO)
     {
-       var user = await _userRepository.GetByIdAsync(userId);
-       if(user is not null)
-        {
-            user.RefreshTokenHash=null;
-            user.RefreshTokenExpiryTime=null;
+       // 1. Hash the incoming token to match what's in the database
+       var hashed = HashToken(refreshTokenDTO.RefreshToken);
+       
+       // 2. Find the specific session
+       var refreshTokens = await _refreshTokenRepository.Find(rt => rt.HashToken == hashed);
+       var refreshToken = refreshTokens.FirstOrDefault();
 
-        await _userRepository.UpdateAsync(user);
-         }
+       // 3. If the session exists, destroy it!
+       if (refreshToken is not null)
+       {
+           await _refreshTokenRepository.DeleteAsync(refreshToken);
+       }
+
 
     }
     private string HashToken(string token)

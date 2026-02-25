@@ -8,7 +8,7 @@ public interface IAuthService
 {
     Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO); // registering user
     Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO);   // logging user
-    Task LogoutAsync(string RefreshToken); // logging out user
+    Task LogoutAsync(RefreshTokenDTO refreshTokenDTO); // logging out user
     Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO); // new refresh token generate
     Task<AuthResponseDTO> GoogleLoginAsync (GoogleLoginDTO googleLoginDTO); // OAuth2.0 Google entegration 
     Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO); // forgot my password
