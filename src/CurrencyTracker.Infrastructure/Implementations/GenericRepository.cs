@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
 using CurrencyTracker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -45,7 +46,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return entity;
 
     }
-
     public Task SaveAsync()
     {
        return _context.SaveChangesAsync();
@@ -62,4 +62,5 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
+
 }

@@ -244,18 +244,17 @@ public class AuthService : IAuthService
 
     public async Task LogoutAsync(RefreshTokenDTO refreshTokenDTO)
     {
-       // 1. Hash the incoming token to match what's in the database
+     
        var hashed = HashToken(refreshTokenDTO.RefreshToken);
        
-       // 2. Find the specific session
-       var refreshTokens = await _refreshTokenRepository.Find(rt => rt.HashToken == hashed);
+      
+       var refreshTokens = await _refreshTokenRepository.Find(u => u.HashToken == hashed);
        var refreshToken = refreshTokens.FirstOrDefault();
 
-       // 3. If the session exists, destroy it!
-       if (refreshToken is not null)
-       {
-           await _refreshTokenRepository.DeleteAsync(refreshToken);
-       }
+       if(refreshToken is not null)
+        {
+            await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
+        }
 
 
     }
