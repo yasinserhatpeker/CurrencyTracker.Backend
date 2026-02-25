@@ -55,7 +55,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                var result = await _authService.RefreshTokenAsync(refreshTokenDTO.RefreshToken);
+                var result = await _authService.RefreshTokenAsync(refreshTokenDTO);
                 return Ok(result);
 
             }
@@ -86,14 +86,16 @@ namespace CurrencyTracker.API.Controllers
 
         [HttpPost("logout")]
         
-        public async Task<IActionResult> Logout()
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenDTO refreshTokenDTO)
         {    
-            var userId = GetCurrentUserId();
-            await _authService.LogoutAsync(userId);
+            
+            await _authService.LogoutAsync(refreshTokenDTO);
 
             return Ok(new{message = "Logged out successfully"});
 
         }
+        
+
 
          
     }
