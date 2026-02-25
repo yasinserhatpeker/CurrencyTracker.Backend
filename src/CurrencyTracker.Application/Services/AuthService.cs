@@ -105,11 +105,15 @@ public class AuthService : IAuthService
     {
         var accesToken = GenerateAccessToken(user);
         var refreshToken = GenerateSecureToken();
-        user.RefreshTokenHash = HashToken(refreshToken);
-       
-        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7); // 7-day refresh token
 
-        await _userRepository.UpdateAsync(user);
+        var newSession = new RefreshToken
+        {
+            Id = Guid.NewGuid(), // creating new guid Id for refresh token
+            HashToken=HashToken(refreshToken), // hashing the refresh token with SHA256
+            ExpiryTime=DateTime.UtcNow.AddDays(7), // expiry time
+            UserId = user.Id // connecting with the userId
+           
+        };
 
         return new AuthResponseDTO
         {
