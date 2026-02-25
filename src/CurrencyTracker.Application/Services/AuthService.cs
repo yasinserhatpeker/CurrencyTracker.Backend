@@ -97,6 +97,8 @@ public class AuthService : IAuthService
         {
             throw new KeyNotFoundException("Cannot retrieve user");
         }
+
+        await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
          
         return await GenerateAuthResponseAsync(user);
     }
