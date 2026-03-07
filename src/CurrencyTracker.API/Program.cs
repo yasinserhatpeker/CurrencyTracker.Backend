@@ -23,7 +23,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService,MockEmailService>();
+builder.Services.AddScoped<IEmailService, MockEmailService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -49,15 +49,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-   
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
-    { 
-        Title = "CurrencyTracker API", 
+
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "CurrencyTracker API",
         Version = "v1",
         Description = "API Documentation"
     });
 
-    
+
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
         Name = "Authorization",
