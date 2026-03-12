@@ -69,7 +69,7 @@ public class TokenService : ITokenService
         {
             throw new KeyNotFoundException("Session is expired please try again.");
         }
-        var user = await _userRepository.GetByIdAsync(refreshToken.Id);
+        var user = await _userRepository.GetByIdAsync(refreshToken.UserId);
         if(user is null)
         {
              throw new KeyNotFoundException("Cannot retrieve user data");
