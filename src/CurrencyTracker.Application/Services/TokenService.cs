@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using CurrencyTracker.Application.DTOs.Auth;
+using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
@@ -26,12 +26,12 @@ public class TokenService : ITokenService
     public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
     {
          var accesToken = GenerateAccessToken(user);
-         var refreshToken = GenerateSecureToken();
+         var refreshToken = CryptoHelpers.GenerateSecureToken();
 
          var newSession = new RefreshToken
          {
             Id=Guid.NewGuid(),
-            HashToken=HashToken(refreshToken),
+            HashToken=CryptoHelpers.HashToken(refreshToken),
             UserId = user.Id,
             ExpiryTime = DateTime.UtcNow.AddDays(7) 
          };
@@ -47,7 +47,7 @@ public class TokenService : ITokenService
 
     public async Task LogoutAsync(RefreshTokenDTO refreshTokenDTO)
     {
-       var hashed = HashToken(refreshTokenDTO.RefreshToken);
+       var hashed = CryptoHelpers.HashToken(refreshTokenDTO.RefreshToken);
 
        var refreshTokens = await _refreshTokenRepository.Find(u=> u.HashToken == hashed);
        var refreshToken = refreshTokens.FirstOrDefault();
@@ -61,7 +61,7 @@ public class TokenService : ITokenService
 
     public async Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO)
     {
-        var hashed = HashToken(refreshTokenDTO.RefreshToken);
+        var hashed = CryptoHelpers.HashToken(refreshTokenDTO.RefreshToken);
         var refreshTokens = await _refreshTokenRepository.Find(u=>u.HashToken == hashed);
         var refreshToken = refreshTokens.FirstOrDefault();
 
@@ -80,17 +80,7 @@ public class TokenService : ITokenService
           return await GenerateAuthResponseAsync(user);
     }
 
-    // private methods
-
-    private string GenerateSecureToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Base64UrlEncoder.Encode(randomNumber);
-        }
-    }
+   
 
     private string GenerateAccessToken(User user)
     {
@@ -118,12 +108,4 @@ public class TokenService : ITokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private string HashToken(string token)
-    {
-        using var sha = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(token);
-        var hash = sha.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
-
-    }
 }

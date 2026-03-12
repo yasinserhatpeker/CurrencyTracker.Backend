@@ -1,38 +1,29 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
+using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-
-
 namespace CurrencyTracker.Application.Services;
 
 public class AuthService : IAuthService
 {
     private readonly IMapper _mapper;
     private readonly IGenericRepository<User> _userRepository;
-    private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
-    private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
-
+    private readonly ITokenService _tokenService;
     private readonly IExternalAuthProvider _externalAuthProvider;
 
-    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService, IGenericRepository<RefreshToken> refreshTokenRepository,IExternalAuthProvider externalAuthProvider)
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IEmailService emailService,IExternalAuthProvider externalAuthProvider, ITokenService tokenService)
     {
         _mapper = mapper;
         _userRepository = userRepository;
-        _configuration = configuration;
         _emailService = emailService;
-        _refreshTokenRepository = refreshTokenRepository;
         _externalAuthProvider=externalAuthProvider;
+        _tokenService=tokenService;
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
@@ -47,8 +38,8 @@ public class AuthService : IAuthService
         user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
         user.AuthProvider = "Local";
 
-        var token = GenerateSecureToken(); // generating token with randomNumberGenerator
-        user.EmailVerificationTokenHash = HashToken(token); // hashing with SHA256
+        var token = CryptoHelpers.GenerateSecureToken(); // generating token with randomNumberGenerator
+        user.EmailVerificationTokenHash = CryptoHelpers.HashToken(token); // hashing with SHA256
         user.IsEmailVerified = false; // ensure they are locked out until they verify
 
         await _userRepository.AddAsync(user); // adding to the DB
@@ -80,89 +71,9 @@ public class AuthService : IAuthService
         {
             throw new UnauthorizedAccessException("Please verify your email before logging in.");
         }
-        return await GenerateAuthResponseAsync(user);
+        return await _tokenService.GenerateAuthResponseAsync(user);
     }
 
-    public async Task<AuthResponseDTO> RefreshTokenAsync(RefreshTokenDTO refreshTokenDTO)
-    {   
-        var hashed = HashToken(refreshTokenDTO.RefreshToken);
-        var refreshTokens = await _refreshTokenRepository.Find(u=>u.HashToken == hashed);
-        var refreshToken = refreshTokens.FirstOrDefault();
-
-        if (refreshToken is null || refreshToken.ExpiryTime is null || refreshToken.ExpiryTime < DateTime.UtcNow)
-        {
-            throw new KeyNotFoundException("The session is expired. Please try again");
-        }
-
-        var user = await _userRepository.GetByIdAsync(refreshToken.UserId);
-        if(user is null)
-        {
-            throw new KeyNotFoundException("Cannot retrieve user");
-        }
-
-        await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
-         
-        return await GenerateAuthResponseAsync(user);
-    }
-
-    public async Task<AuthResponseDTO> GenerateAuthResponseAsync(User user)
-    {
-        var accesToken = GenerateAccessToken(user);
-        var refreshToken = GenerateSecureToken();
-
-        var newSession = new RefreshToken
-        {
-            Id = Guid.NewGuid(), // creating new guid Id for refresh token
-            HashToken=HashToken(refreshToken), // hashing the refresh token with SHA256
-            ExpiryTime=DateTime.UtcNow.AddDays(7), // expiry time
-            UserId = user.Id // connecting with the userId
-           
-        };
-
-        await _refreshTokenRepository.AddAsync(newSession);
-
-        return new AuthResponseDTO
-        {
-            AccessToken = accesToken,
-            RefreshToken = refreshToken
-        };
-
-    }
-    private string GenerateAccessToken(User user)
-    {
-        var claims = new List<Claim>
-        {
-          new Claim(JwtRegisteredClaimNames.Sub ,user.Id.ToString()),
-          new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-          new Claim(JwtRegisteredClaimNames.Email, user.Email),
-          new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // token-refreshing with token ID
-
-        };
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]!));
-
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken
-        (
-            issuer: _configuration["JwtSettings:Issuer"],
-            audience: _configuration["JwtSettings:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(10), // 10-minute access token
-            signingCredentials: creds
-        );
-        return new JwtSecurityTokenHandler().WriteToken(token);
-
-    }
-    private string GenerateSecureToken()
-    {
-        var randomNumber = new byte[32];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(randomNumber);
-            return Base64UrlEncoder.Encode(randomNumber);
-
-        }
-    }
 
     public async Task<AuthResponseDTO> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO)
     {
@@ -200,34 +111,8 @@ public class AuthService : IAuthService
 
             await _userRepository.AddAsync(existingUser);
             }
-            return await GenerateAuthResponseAsync(existingUser);
+            return await _tokenService.GenerateAuthResponseAsync(existingUser);
         }
-
-    
-
-    public async Task LogoutAsync(RefreshTokenDTO refreshTokenDTO)
-    {
-     
-       var hashed = HashToken(refreshTokenDTO.RefreshToken);
-       
-      
-       var refreshTokens = await _refreshTokenRepository.Find(u => u.HashToken == hashed);
-       var refreshToken = refreshTokens.FirstOrDefault();
-
-       if(refreshToken is not null)
-        {
-            await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
-        }
-
-
-    }
-    private string HashToken(string token)
-    {
-        using var sha = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(token);
-        var hash = sha.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
-    }
 
     public async Task ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDTO)
     {
@@ -237,8 +122,8 @@ public class AuthService : IAuthService
         {
            return; // returning silently so email enumeration attacks can be prevented
         }
-        var token = GenerateSecureToken(); // generating 32-byte token with RandomNumberGenerator
-        var hashedToken = HashToken(token); // hashing the token with SHA256
+        var token = CryptoHelpers.GenerateSecureToken(); // generating 32-byte token with RandomNumberGenerator
+        var hashedToken = CryptoHelpers.HashToken(token); // hashing the token with SHA256
 
         user.ResetPasswordTokenHash = hashedToken;  // implementing DB
         user.ResetPasswordTokenExpiryTime = DateTime.UtcNow.AddMinutes(15);
@@ -256,7 +141,7 @@ public class AuthService : IAuthService
 
     public async Task ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
     {
-        var hashed = HashToken(resetPasswordDTO.ResetPasswordToken); // fetching hashed token
+        var hashed = CryptoHelpers.HashToken(resetPasswordDTO.ResetPasswordToken); // fetching hashed token
         var users = await _userRepository.Find(u=>u.ResetPasswordTokenHash == hashed); // checking if the token hashed
         var user = users.FirstOrDefault();
         
@@ -276,7 +161,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> EmailVerificationAsync(string token)
     {
-        var hashed = HashToken(token);
+        var hashed = CryptoHelpers.HashToken(token);
         var users = await _userRepository.Find(u=>u.EmailVerificationTokenHash == hashed);
         var user = users.FirstOrDefault();
         if(user is null)
