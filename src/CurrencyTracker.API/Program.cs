@@ -2,6 +2,7 @@ using System.Text;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Application.Services;
 using CurrencyTracker.Domain.Interfaces;
+using CurrencyTracker.Infrastructure.EmailVerification;
 using CurrencyTracker.Infrastructure.Implementations;
 using CurrencyTracker.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
