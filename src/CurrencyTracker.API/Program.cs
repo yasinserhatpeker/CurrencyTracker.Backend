@@ -24,6 +24,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddScoped<IEmailService, MockEmailService>();
 
 builder.Services.AddAuthentication(options =>
