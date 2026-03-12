@@ -9,4 +9,5 @@ public interface IAuthService
     Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO); // registering user
     Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO);   // logging user
     Task<AuthResponseDTO> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO); // google oauth2.0 implementation
+    
 }
