@@ -9,7 +9,6 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using CurrencyTracker.Domain.Interfaces;
-using Google.Apis.Auth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -24,13 +23,16 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
 
-    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService, IGenericRepository<RefreshToken> refreshTokenRepository)
+    private readonly IExternalAuthProvider _externalAuthProvider;
+
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IConfiguration configuration, IEmailService emailService, IGenericRepository<RefreshToken> refreshTokenRepository,IExternalAuthProvider externalAuthProvider)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _configuration = configuration;
         _emailService = emailService;
         _refreshTokenRepository = refreshTokenRepository;
+        _externalAuthProvider=externalAuthProvider;
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
@@ -164,85 +166,44 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDTO> GoogleLoginAsync(GoogleLoginDTO googleLoginDTO)
     {
-        GoogleJsonWebSignature.Payload payload;
-
-        try
+       var externalUser = await _externalAuthProvider.ValidateGoogleTokenAsync(googleLoginDTO.IdToken);
+       if(!externalUser.IsEmailVerified)
         {
-            var clientId = _configuration["GoogleAuthSettings:ClientId"]; // get the clientId from 
-            // configuration
-            if(string.IsNullOrEmpty(clientId))
-            {
-                throw new Exception("Google clientID is missing in the configuration!");
-            }
-
-            
-            var settings = new GoogleJsonWebSignature.ValidationSettings() 
-            {
-                Audience = new List<string>() {clientId!}  // we get the clientId for auth
-            };
-
-            payload = await GoogleJsonWebSignature.ValidateAsync(googleLoginDTO.IdToken,settings);
-             
-            // validating the token 
-            if(!payload.EmailVerified)
-            {
-                throw new Exception("Please verify your Google email before logging in");
-            }
-             if(payload.Issuer != "https://accounts.google.com" && payload.Issuer != "accounts.google.com")
-            {
-                throw new Exception("Invalid payload issuer");
-            }
-            // if invalid throw a exception
-
-        } 
-        catch(InvalidJwtException)
-        {
-            throw new KeyNotFoundException("Invalid Google token");
+            throw new Exception("Please verify your Google email");
         }
-        
-        var users = await _userRepository.Find(u => u.GoogleId == payload.Subject);
-        var existingUser = users.FirstOrDefault();  // check if the user exists in the DB
+        var users = await _userRepository.Find(u=>u.GoogleId == externalUser.ProviderUserId);
+        var existingUser = users.FirstOrDefault();
 
         if(existingUser is null)
         {
-            existingUser = (await _userRepository.Find(u=>u.Email == payload.Email)).FirstOrDefault();
-            
+            existingUser = (await _userRepository.Find(u=>u.Email == externalUser.Email)).FirstOrDefault();
+
             if(existingUser is not null)
             {
-                existingUser.GoogleId=payload.Subject;
-                await _userRepository.UpdateAsync(existingUser);   
+                existingUser.GoogleId = externalUser.ProviderUserId;
+                await _userRepository.UpdateAsync(existingUser);
             }
+         }
+        if(existingUser is null)
+            {
+                existingUser = new User
+                {
+                    Id=Guid.NewGuid(),
+                    Email=externalUser.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                    Username = externalUser.Name,
+                    GoogleId=externalUser.ProviderUserId,
+                    AuthProvider="Google",
+                    IsEmailVerified =externalUser.IsEmailVerified,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+            await _userRepository.AddAsync(existingUser);
+            }
+            return await GenerateAuthResponseAsync(existingUser);
         }
 
-        if(existingUser is not null)
-        {
-            return await GenerateAuthResponseAsync(existingUser); // returns the existing user to generate token
-        }
-
-        // if there's no user create one
-        else
-        {
-            var newUser = new User
-            {   Id = Guid.NewGuid(),     // random Guid ID
-                Email = payload.Email,   // using the Google email
-                Username = payload.Name, // using the Google name e.g "Y. Serhat Peker"
-                AuthProvider = "Google",  // mark them as a google user
-                GoogleId = payload.Subject,
-                IsEmailVerified=true, 
-            
-               // generate a random strong password hash because DB use it
-               // they never use this password, they will use google
-               PasswordHash = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
-               CreatedAt = DateTime.UtcNow,
-            };
-
-            await _userRepository.AddAsync(newUser);
-            return await GenerateAuthResponseAsync(newUser); // generate token for new user
-           
-
-        }
-
-    }
+    
 
     public async Task LogoutAsync(RefreshTokenDTO refreshTokenDTO)
     {
