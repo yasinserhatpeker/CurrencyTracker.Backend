@@ -10,17 +10,22 @@ namespace CurrencyTracker.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     
-    public class AuthController : CustomBaseController
+    public class AuthController: CustomBaseController
     {
         private readonly IAuthService _authService;
-        
+        private readonly IUserAccountService _userAccountService;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService)
+
+
+        public AuthController(IAuthService authService,IUserAccountService userAccountService, ITokenService tokenService)
         {
             _authService=authService;
+            _tokenService=tokenService;
+            _userAccountService=userAccountService;
           
         }
-        
+
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] CreateUserDTO createUserDTO)
@@ -57,7 +62,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                var result = await _authService.RefreshTokenAsync(refreshTokenDTO);
+                var result = await _tokenService.RefreshTokenAsync(refreshTokenDTO);
                 return Ok(result);
 
             }
@@ -91,7 +96,7 @@ namespace CurrencyTracker.API.Controllers
         public async Task<IActionResult> Logout([FromBody] RefreshTokenDTO refreshTokenDTO)
         {    
             
-            await _authService.LogoutAsync(refreshTokenDTO);
+            await _tokenService.LogoutAsync(refreshTokenDTO);
 
             return Ok(new{message = "Logged out successfully"});
 
@@ -103,7 +108,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                var IsEmailVerified =await _authService.EmailVerificationAsync(token);
+                var IsEmailVerified =await _userAccountService.EmailVerificationAsync(token);
                 if(IsEmailVerified)
                 {
                     return Ok(new{message="Your email is verified, you can now log in."});
@@ -127,7 +132,7 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-                await _authService.ForgotPasswordAsync(forgotPasswordDTO);
+                await _userAccountService.ForgotPasswordAsync(forgotPasswordDTO);
                 return Ok(new{message="If your email is registered, reset link has been sent."});
                 
             }
@@ -148,7 +153,7 @@ namespace CurrencyTracker.API.Controllers
           
           try
             {
-                await _authService.ResetPasswordAsync(resetPasswordDTO);
+                await _userAccountService.ResetPasswordAsync(resetPasswordDTO);
                 return Ok(new{message="Password is successfully changed."});
             }
         

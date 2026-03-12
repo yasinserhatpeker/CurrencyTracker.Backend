@@ -2,6 +2,7 @@ using System.Text;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Application.Services;
 using CurrencyTracker.Domain.Interfaces;
+using CurrencyTracker.Infrastructure.Authentication;
 using CurrencyTracker.Infrastructure.EmailVerification;
 using CurrencyTracker.Infrastructure.Implementations;
 using CurrencyTracker.Infrastructure.Persistence;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
 builder.Services.AddScoped<IUserAccountService,UserAccountService>();
+builder.Services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
 builder.Services.AddScoped<IEmailService, MockEmailService>();
 
 builder.Services.AddAuthentication(options =>
