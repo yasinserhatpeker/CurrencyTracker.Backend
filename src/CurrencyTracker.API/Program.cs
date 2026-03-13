@@ -1,10 +1,4 @@
 using System.Text;
-using CurrencyTracker.Application.Interfaces;
-using CurrencyTracker.Application.Services;
-using CurrencyTracker.Domain.Interfaces;
-using CurrencyTracker.Infrastructure.Authentication;
-using CurrencyTracker.Infrastructure.EmailVerification;
-using CurrencyTracker.Infrastructure.Implementations;
 using CurrencyTracker.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -18,17 +12,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(connectionString);
 });
-
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IPortfolioService, PortfolioService>();
-builder.Services.AddScoped<ITransactionService, TransactionService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService,JwtTokenService>();
-builder.Services.AddScoped<IUserAccountService,UserAccountService>();
-builder.Services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
-builder.Services.AddScoped<IEmailService, MockEmailService>();
 
 builder.Services.AddAuthentication(options =>
 {
