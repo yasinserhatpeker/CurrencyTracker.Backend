@@ -24,4 +24,8 @@
     <ProjectReference Include="..\CurrencyTracker.Infrastructure\CurrencyTracker.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ServiceRegistration/" />
+  </ItemGroup>
+
 </Project>

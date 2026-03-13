@@ -41,6 +41,8 @@ public static class InfrastructureRegistration
                  ClockSkew = TimeSpan.Zero
              };
          });
+
+      
          
         
     }
