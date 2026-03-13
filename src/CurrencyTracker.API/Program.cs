@@ -25,7 +25,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<ITokenService,JwtTokenService>();
 builder.Services.AddScoped<IUserAccountService,UserAccountService>();
 builder.Services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
 builder.Services.AddScoped<IEmailService, MockEmailService>();
