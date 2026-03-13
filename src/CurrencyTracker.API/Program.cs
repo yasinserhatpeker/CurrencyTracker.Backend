@@ -5,8 +5,8 @@ using CurrencyTracker.Infrastructure.Persistence.ServiceRegistration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
+builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddSwaggerGenServices();
 builder.Services.AddApiRegistrationServices();
