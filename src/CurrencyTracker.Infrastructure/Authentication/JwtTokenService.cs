@@ -11,13 +11,13 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace CurrencyTracker.Application.Services;
 
-public class TokenService : ITokenService
+public class JwtTokenService : ITokenService
 {   
     private readonly IConfiguration _configuration;
     private readonly IGenericRepository<User> _userRepository;
     private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
 
-    public TokenService(IConfiguration configuration, IGenericRepository<User> userRepository,IGenericRepository<RefreshToken> refreshTokenRepository)
+    public JwtTokenService(IConfiguration configuration, IGenericRepository<User> userRepository,IGenericRepository<RefreshToken> refreshTokenRepository)
     {
         _configuration=configuration;
         _userRepository=userRepository;
