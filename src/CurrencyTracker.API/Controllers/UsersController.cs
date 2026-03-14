@@ -1,5 +1,7 @@
+using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Application.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -20,11 +22,11 @@ namespace CurrencyTracker.API.Controllers
             try
             {   var userId = GetCurrentUserId();
                 var user = await _userService.GetByIdAsync(userId);
-                return Ok(user);
+                return Ok(ApiResponse<UserResponseDTO>.Success(user, "You retrieved your profile successfully."));
             }
             catch(Exception ex)
             {
-                return NotFound(new{message=ex.Message});
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
@@ -36,12 +38,12 @@ namespace CurrencyTracker.API.Controllers
             {    
                 var userId = GetCurrentUserId();
                 updateUserDTO.Id=userId;
-                 await _userService.UpdateUserAsync(userId,updateUserDTO);
-                 return Ok(new {message = "User updated succesfully!"});
+                 var updatedUser = await _userService.UpdateUserAsync(userId,updateUserDTO);
+                 return Ok(ApiResponse<UserResponseDTO>.Success(updatedUser, "You updated your profile successfully."));
             } 
             catch(Exception ex)
             {
-                return NotFound(new {message = ex.Message});
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
@@ -56,7 +58,7 @@ namespace CurrencyTracker.API.Controllers
             }
             catch(Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
