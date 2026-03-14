@@ -33,7 +33,7 @@ namespace CurrencyTracker.API.Controllers
 
                 }
                var transaction = await _transactionService.CreateTransactionAsync(createTransactionsDTO);
-                return CreatedAtAction(nameof(GetById),new {id=transaction.Id}, new { message = "Transaction created successfully."});
+                return CreatedAtAction(nameof(GetById),new {id=transaction.Id},ApiResponse<TransactionResponseDTO>.Success(transaction,"You created the transaction successfully."));
             }
             catch (Exception ex)
             {
@@ -50,13 +50,13 @@ namespace CurrencyTracker.API.Controllers
                 var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
                 if (portfolio is null || portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new { message = "You dont have an access to do it." });
+                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
                 }
-                return Ok(transactionDto);
+                return Ok(ApiResponse<TransactionResponseDTO>.Success(transactionDto, "You retrieved the transaction successfully."));
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
 
         }
