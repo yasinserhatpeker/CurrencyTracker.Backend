@@ -1,5 +1,6 @@
 using CurrencyTracker.Application.DTOs.Portfolios;
 using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Application.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -11,27 +12,30 @@ namespace CurrencyTracker.API.Controllers
         private readonly IPortfolioService _portfolioService;
         public PortfoliosController(IPortfolioService portfolioService)
         {
-           _portfolioService = portfolioService;
-          
-        }
-        
+            _portfolioService = portfolioService;
 
-        
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePortfolioDTO createPortfolioDTO)
         {
-            if(!ModelState.IsValid)
-            return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ApiResponse<object>.Fail("Invalid data"));
 
             try
-            {   
-                createPortfolioDTO.UserId=GetCurrentUserId();
-                await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
-                return CreatedAtAction(nameof(GetById), new { id = createPortfolioDTO.UserId }, createPortfolioDTO);
-            }
-            catch(Exception ex)
             {
-                return BadRequest (new{message=ex.Message});
+                createPortfolioDTO.UserId = GetCurrentUserId();
+                await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
+
+                return CreatedAtAction(nameof(GetById), 
+                new { id = createPortfolioDTO.UserId }, 
+                ApiResponse<CreatePortfolioDTO>.Success(createPortfolioDTO, "You created the portfolio successfully."));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ApiResponse<object>.Fail(ex.Message));
             }
 
         }
@@ -42,18 +46,18 @@ namespace CurrencyTracker.API.Controllers
             try
             {
                 var portfolio = await _portfolioService.GetByIdAsync(id);
-                if(portfolio.UserId != GetCurrentUserId())
+                if (portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new{message="You have no right to see this portfolio"});
+                    return Unauthorized(ApiResponse<object>.Fail("You have no right to see this portfolio"));
                 }
-                return Ok(portfolio);
+                return Ok(ApiResponse<PortfolioResponseDTO>.Success(portfolio, "You retrieved the portfolio successfully."));
 
-                
+
             }
-        
-          catch(Exception ex)
+
+            catch (Exception ex)
             {
-                return NotFound (new{message=ex.Message});
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
@@ -62,54 +66,54 @@ namespace CurrencyTracker.API.Controllers
         {
             try
             {
-               var userId = GetCurrentUserId();
-               var portfolios = await _portfolioService.GetPortfoliosByUserAsync(userId);
-               return Ok(portfolios);
+                var userId = GetCurrentUserId();
+                var portfolios = await _portfolioService.GetPortfoliosByUserAsync(userId);
+                return Ok(ApiResponse<IEnumerable<PortfolioResponseDTO>>.Success(portfolios, "You retrieved the portfolios successfully."));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return NotFound (new{message=ex.Message});
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
-            {   
+            {
                 var portfolio = await _portfolioService.GetByIdAsync(id);
-                if(portfolio.UserId != GetCurrentUserId())
+                if (portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new{message ="You have no right to delete this portfolio"});
+                    return Unauthorized(ApiResponse<object>.Fail("You have no right to delete this portfolio"));
                 }
                 await _portfolioService.DeletePortfolioAsync(id);
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
         {
-            if(updatePortfolioDTO.Id != id)
+            if (updatePortfolioDTO.Id != id)
             {
-                return BadRequest("ID mismatch");
+                return BadRequest(ApiResponse<object>.Fail("ID mismatch"));
             }
             try
-            {   
-                var portfolio = await _portfolioService.GetByIdAsync(id);
-                if(portfolio.UserId != GetCurrentUserId())
-                {
-                    return Unauthorized(new{message="You have no right to update this portfolio"});
-                }
-                await _portfolioService.UpdatePortfolioAsync(id,updatePortfolioDTO);
-                return Ok(new{message="Portfolio updated succesfully!"});
-            }
-            catch(Exception ex)
             {
-                return NotFound(new{message=ex.Message});
+                var portfolio = await _portfolioService.GetByIdAsync(id);
+                if (portfolio.UserId != GetCurrentUserId())
+                {
+                    return Unauthorized(ApiResponse<object>.Fail("You have no right to update this portfolio"));
+                }
+                await _portfolioService.UpdatePortfolioAsync(id, updatePortfolioDTO);
+                return Ok(ApiResponse<PortfolioResponseDTO>.Success("You updated the portfolio successfully."));
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 

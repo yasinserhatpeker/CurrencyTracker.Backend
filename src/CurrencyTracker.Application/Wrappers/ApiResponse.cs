@@ -1,5 +1,3 @@
-using System;
-
 namespace CurrencyTracker.Application.Wrappers;
 
 public class ApiResponse<T>
@@ -32,5 +30,5 @@ public class ApiResponse<T>
         return new ApiResponse<T>{ IsSuccess = false, Message = message, Errors = errors };
     }
 
-    
+
 }
