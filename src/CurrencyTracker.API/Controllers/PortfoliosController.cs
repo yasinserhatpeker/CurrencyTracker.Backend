@@ -27,11 +27,11 @@ namespace CurrencyTracker.API.Controllers
             try
             {
                 createPortfolioDTO.UserId = GetCurrentUserId();
-                await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
+                var portfolio =  await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
 
                 return CreatedAtAction(nameof(GetById), 
-                new { id = createPortfolioDTO.UserId }, 
-                ApiResponse<CreatePortfolioDTO>.Success(createPortfolioDTO, "You created the portfolio successfully."));
+                new { id = portfolio.Id }, 
+                ApiResponse<PortfolioResponseDTO>.Success(portfolio, "You created the portfolio successfully."));
             }
             catch (Exception ex)
             {

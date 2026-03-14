@@ -5,7 +5,7 @@ namespace CurrencyTracker.Application.Interfaces;
 
 public interface IPortfolioService
 {    
-    Task CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO);
+    Task<PortfolioResponseDTO> CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO);
     Task<PortfolioResponseDTO> GetByIdAsync(Guid id);
     Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid userId);
     Task UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO);

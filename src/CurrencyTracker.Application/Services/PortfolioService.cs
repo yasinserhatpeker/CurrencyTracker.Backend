@@ -17,11 +17,13 @@ public class PortfolioService : IPortfolioService
         _portfolioRepository= portfolioRepository;
     }
     
-    public async Task CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO)
+    public async Task<PortfolioResponseDTO> CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO)
     {
         var newPortfolio = _mapper.Map<Portfolio>(createPortfolioDTO);
 
         await _portfolioRepository.AddAsync(newPortfolio);
+
+        return  _mapper.Map<PortfolioResponseDTO>(newPortfolio);
 
        
     }

@@ -4,7 +4,7 @@ namespace CurrencyTracker.Application.Interfaces;
 
 public interface ITransactionService
 {
-    Task CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO);
+    Task<TransactionResponseDTO> CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO);
     Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId);
     Task<TransactionResponseDTO> GetByIdAsync(Guid Id);
     Task DeleteTransactionAsync(Guid id);

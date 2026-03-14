@@ -16,13 +16,14 @@ public class TransactionService : ITransactionService
         _mapper=mapper;
         _transactionRepository=transactionRepository;
     }
-    public async Task CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO)
+    public async Task<TransactionResponseDTO> CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO)
     {
         var transaction = _mapper.Map<Transaction>(createTransactionsDTO);
         
         await _transactionRepository.AddAsync(transaction);
 
-       
+        return _mapper.Map<TransactionResponseDTO>(transaction);
+
     }
 
     public async Task DeleteTransactionAsync(Guid id)

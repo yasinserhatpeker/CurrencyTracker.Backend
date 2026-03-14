@@ -1,5 +1,6 @@
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Application.Wrappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyTracker.API.Controllers
@@ -20,7 +21,7 @@ namespace CurrencyTracker.API.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ApiResponse<object>.Fail("Invalid data"));
             }
 
             try
@@ -28,15 +29,15 @@ namespace CurrencyTracker.API.Controllers
                 var portfolio = await _portfolioService.GetByIdAsync(createTransactionsDTO.PortfolioId);
                 if (portfolio is null || portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new { message = "You have no right to create a transaction." });
+                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
 
                 }
-                await _transactionService.CreateTransactionAsync(createTransactionsDTO);
-                return Ok(new { message = "Transaction created succesfully!" });
+               var transaction = await _transactionService.CreateTransactionAsync(createTransactionsDTO);
+                return CreatedAtAction(nameof(GetById),new {id=transaction.Id}, new { message = "Transaction created successfully."});
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(ApiResponse<object>.Fail(ex.Message));
             }
 
         }
