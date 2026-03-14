@@ -1,12 +1,16 @@
-using System;
-using System.Runtime.CompilerServices;
-using CurrencyTracker.Domain.Entities;
+
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace CurrencyTracker.Application.DTOs.Portfolios;
 
 public class CreatePortfolioDTO
 {
-   public string Name {get;set;} = default!;
-   public Guid UserId {get;set;}
+   [Required(ErrorMessage = "Name is required")]
+   [MaxLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
+   public string Name { get; set; } = default!;
    
+   [JsonIgnore]
+   public Guid UserId { get; set; }
+
 }

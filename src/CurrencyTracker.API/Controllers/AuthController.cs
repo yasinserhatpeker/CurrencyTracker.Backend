@@ -108,12 +108,7 @@ namespace CurrencyTracker.API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
-            if (resetPasswordDTO.NewPassword != resetPasswordDTO.ConfirmPassword)
-            {
-                return BadRequest(new { message = "Passwords do not match." });
-            }
-
-
+           
             await _userAccountService.ResetPasswordAsync(resetPasswordDTO);
             return Ok(new { message = "Password is successfully changed." });
 

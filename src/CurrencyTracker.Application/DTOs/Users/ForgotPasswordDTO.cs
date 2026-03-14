@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CurrencyTracker.Application.DTOs.Users;
 
 public class ForgotPasswordDTO
-{
-     public string Email {get;set;} = default!;
+{         
+     [Required]
+     [EmailAddress]
+          public string Email {get;set;} = default!;
      
 }
