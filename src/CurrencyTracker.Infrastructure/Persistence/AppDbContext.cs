@@ -1,4 +1,3 @@
-using System;
 using CurrencyTracker.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
