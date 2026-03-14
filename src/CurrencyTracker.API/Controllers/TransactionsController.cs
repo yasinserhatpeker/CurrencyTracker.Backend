@@ -19,11 +19,6 @@ namespace CurrencyTracker.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CreateTransactionsDTO createTransactionsDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ApiResponse<object>.Fail("Invalid data"));
-            }
-
 
             var portfolio = await _portfolioService.GetByIdAsync(createTransactionsDTO.PortfolioId);
             if (portfolio is null || portfolio.UserId != GetCurrentUserId())
@@ -39,47 +34,47 @@ namespace CurrencyTracker.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-          
-                var transactionDto = await _transactionService.GetByIdAsync(id);
-                var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
-                if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-                {
-                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-                }
-                return Ok(ApiResponse<TransactionResponseDTO>.Success(transactionDto, "You retrieved the transaction successfully."));
+
+            var transactionDto = await _transactionService.GetByIdAsync(id);
+            var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
+            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
+            {
+                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
+            }
+            return Ok(ApiResponse<TransactionResponseDTO>.Success(transactionDto, "You retrieved the transaction successfully."));
 
         }
 
         [HttpGet("portfolio/{portfolioId}")]
         public async Task<IActionResult> GetByPortfolio(Guid portfolioId)
         {
-            
-                var portfolio = await _portfolioService.GetByIdAsync(portfolioId);
-                if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-                {
-                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-                }
-                var transactions = await _transactionService.GetTransactionsByPortfolioAsync(portfolioId);
-                return Ok(ApiResponse<IEnumerable<TransactionResponseDTO>>.Success(transactions, "You retrieved the transactions successfully."));
-          
+
+            var portfolio = await _portfolioService.GetByIdAsync(portfolioId);
+            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
+            {
+                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
+            }
+            var transactions = await _transactionService.GetTransactionsByPortfolioAsync(portfolioId);
+            return Ok(ApiResponse<IEnumerable<TransactionResponseDTO>>.Success(transactions, "You retrieved the transactions successfully."));
+
 
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            
-                var transactionDto = await _transactionService.GetByIdAsync(id);
-                var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
 
-                if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-                {
-                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-                }
+            var transactionDto = await _transactionService.GetByIdAsync(id);
+            var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
 
-                await _transactionService.DeleteTransactionAsync(id);
-                return NoContent();
-           
+            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
+            {
+                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
+            }
+
+            await _transactionService.DeleteTransactionAsync(id);
+            return NoContent();
+
         }
 
         [HttpPut("{id}")]
@@ -89,16 +84,16 @@ namespace CurrencyTracker.API.Controllers
             {
                 return BadRequest(ApiResponse<object>.Fail("ID mismatch"));
             }
-           
-                var existingTransaction = await _transactionService.GetByIdAsync(id);
-                var portfolio = await _portfolioService.GetByIdAsync(existingTransaction.PortfolioId);
 
-                if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-                {
-                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it"));
-                }
-                var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO);
-                return Ok(ApiResponse<TransactionResponseDTO>.Success(updatedTransaction, "You updated the transaction successfully."));
+            var existingTransaction = await _transactionService.GetByIdAsync(id);
+            var portfolio = await _portfolioService.GetByIdAsync(existingTransaction.PortfolioId);
+
+            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
+            {
+                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it"));
+            }
+            var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO);
+            return Ok(ApiResponse<TransactionResponseDTO>.Success(updatedTransaction, "You updated the transaction successfully."));
         }
     }
 }

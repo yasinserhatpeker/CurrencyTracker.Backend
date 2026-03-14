@@ -21,8 +21,6 @@ namespace CurrencyTracker.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePortfolioDTO createPortfolioDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ApiResponse<object>.Fail("Invalid data"));
 
 
             createPortfolioDTO.UserId = GetCurrentUserId();
