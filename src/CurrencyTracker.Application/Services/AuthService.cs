@@ -65,7 +65,7 @@ public class AuthService : IAuthService
 
         if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash)) 
         {
-            throw new KeyNotFoundException("Email or password is invalid");
+            throw new UnauthorizedAccessException("Email or password is invalid");
         }
         if(!user.IsEmailVerified)
         {

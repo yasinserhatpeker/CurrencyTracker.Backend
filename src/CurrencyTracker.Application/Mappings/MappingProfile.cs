@@ -12,9 +12,9 @@ public class MappingProfile : Profile
 {
    public MappingProfile()
     {
-        CreateMap<CreateUserDTO,User>().ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password)); // CreateMap<Source,Destination>(); src-> password == dest-> passwordHash
+        CreateMap<CreateUserDTO,User>().ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
         CreateMap<User,UserResponseDTO>();
-        CreateMap<UpdateUserDTO,User>().ForMember(dest =>dest.PasswordHash,opt => opt.MapFrom(src => src.Password));
+        CreateMap<UpdateUserDTO,User>().ForMember(dest =>dest.PasswordHash,opt => opt.Ignore());
 
        // Portfolio Mapping
         CreateMap<CreatePortfolioDTO,Portfolio>();
