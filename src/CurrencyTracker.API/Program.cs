@@ -1,3 +1,4 @@
+using CurrencyTracker.API.Middlewares;
 using CurrencyTracker.API.ServiceRegistration;
 using CurrencyTracker.Application.ServiceRegistration;
 using CurrencyTracker.Infrastructure.Persistence;
@@ -18,7 +19,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
