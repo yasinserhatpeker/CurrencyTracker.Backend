@@ -1,7 +1,6 @@
-using System;
 using System.Linq.Expressions;
-using CurrencyTracker.Domain.Entities;
-namespace CurrencyTracker.Domain.Interfaces;
+
+namespace CurrencyTracker.Application.Interfaces;
 
 public interface IGenericRepository<T> where T : class
 {

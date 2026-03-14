@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
-using CurrencyTracker.Domain.Entities;
-using CurrencyTracker.Domain.Interfaces;
+using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
