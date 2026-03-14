@@ -7,4 +7,6 @@ public  static class ApiRegistration
         services.AddControllers();
         services.AddEndpointsApiExplorer();
     }
+
+   
 }
