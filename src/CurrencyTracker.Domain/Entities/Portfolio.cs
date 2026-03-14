@@ -5,6 +5,7 @@ public class Portfolio : BaseEntity
   public string Name {get; set;} = string.Empty;
   public Guid UserId {get; set;} 
   public User User {get; set;} = default!;
+  public string BaseCurrency {get;set;} = string.Empty;
   public ICollection<Transaction> Transactions{get; set;} = new List<Transaction>();
 
 
