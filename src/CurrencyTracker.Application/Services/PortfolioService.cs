@@ -57,17 +57,17 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    public async Task UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
+    public async Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
     {
        var portfolio = await _portfolioRepository.GetByIdAsync(id);
        if(portfolio is null)
         {
             throw new KeyNotFoundException("No portfolio is found");
         }
-         _mapper.Map(updatePortfolioDTO,portfolio);
-
+            _mapper.Map(updatePortfolioDTO,portfolio);
          await _portfolioRepository.UpdateAsync(portfolio); 
 
-
+         return _mapper.Map<PortfolioResponseDTO>(portfolio);
+        
     }
 }

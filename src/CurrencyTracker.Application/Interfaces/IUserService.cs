@@ -8,9 +8,9 @@ namespace CurrencyTracker.Application.Interfaces;
 public interface IUserService
 {
    Task<IEnumerable<UserResponseDTO>> GetAllUsersAsync();
-   Task CreateUserAsync(CreateUserDTO createUserDTO);
+   Task<UserResponseDTO> CreateUserAsync(CreateUserDTO createUserDTO);
    Task<UserResponseDTO> GetByIdAsync(Guid id);
-   Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO);
+   Task<UserResponseDTO> UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO);
    Task DeleteUserAsync(Guid id);
    
 }

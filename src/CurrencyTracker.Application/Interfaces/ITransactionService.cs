@@ -8,6 +8,6 @@ public interface ITransactionService
     Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId);
     Task<TransactionResponseDTO> GetByIdAsync(Guid Id);
     Task DeleteTransactionAsync(Guid id);
-    Task UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO);
+    Task<TransactionResponseDTO> UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO);
 
 }

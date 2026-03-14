@@ -32,8 +32,8 @@ namespace CurrencyTracker.API.Controllers
                     return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
 
                 }
-               var transaction = await _transactionService.CreateTransactionAsync(createTransactionsDTO);
-                return CreatedAtAction(nameof(GetById),new {id=transaction.Id},ApiResponse<TransactionResponseDTO>.Success(transaction,"You created the transaction successfully."));
+                var transaction = await _transactionService.CreateTransactionAsync(createTransactionsDTO);
+                return CreatedAtAction(nameof(GetById), new { id = transaction.Id }, ApiResponse<TransactionResponseDTO>.Success(transaction, "You created the transaction successfully."));
             }
             catch (Exception ex)
             {
@@ -69,14 +69,14 @@ namespace CurrencyTracker.API.Controllers
                 var portfolio = await _portfolioService.GetByIdAsync(portfolioId);
                 if (portfolio is null || portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new { message = "You dont have an access to do it." });
+                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
                 }
                 var transactions = await _transactionService.GetTransactionsByPortfolioAsync(portfolioId);
-                return Ok(transactions);
+                return Ok(ApiResponse<IEnumerable<TransactionResponseDTO>>.Success(transactions, "You retrieved the transactions successfully."));
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
 
             }
 
@@ -92,7 +92,7 @@ namespace CurrencyTracker.API.Controllers
 
                 if (portfolio is null || portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new{message="You dont have an access to do it"});
+                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
                 }
 
                 await _transactionService.DeleteTransactionAsync(id);
@@ -100,34 +100,32 @@ namespace CurrencyTracker.API.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateTransactionDTO updateTransactionDTO)
         {
-
-             
-            if (updateTransactionDTO.Id != id)
+             if (updateTransactionDTO.Id != id)
             {
-                return BadRequest("ID mismatch");
+                return BadRequest(ApiResponse<object>.Fail("ID mismatch"));
             }
             try
-            {   
+            {
                 var existingTransaction = await _transactionService.GetByIdAsync(id);
                 var portfolio = await _portfolioService.GetByIdAsync(existingTransaction.PortfolioId);
 
-                if(portfolio is null || portfolio.UserId != GetCurrentUserId())
+                if (portfolio is null || portfolio.UserId != GetCurrentUserId())
                 {
-                    return Unauthorized(new{message ="You dont have an access to do it"});
+                    return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it"));
                 }
-                await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO);
-                return Ok(new { message = "Transaction updated succesfully" });
+                var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO);
+                return Ok(ApiResponse<TransactionResponseDTO>.Success(updatedTransaction, "You updated the transaction successfully."));
             }
             catch (Exception ex)
             {
-                return NotFound(new { message = ex.Message });
+                return NotFound(ApiResponse<object>.Fail(ex.Message));
             }
         }
     }

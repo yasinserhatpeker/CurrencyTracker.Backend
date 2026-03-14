@@ -20,10 +20,11 @@ public class UserService : IUserService
 
 
      
-    public async Task CreateUserAsync(CreateUserDTO createUserDTO)
+    public async Task<UserResponseDTO> CreateUserAsync(CreateUserDTO createUserDTO)
     {
         var newUser = _mapper.Map<User>(createUserDTO);
         await _userRepository.AddAsync(newUser);
+        return _mapper.Map<UserResponseDTO>(newUser);
 
        
     }
@@ -59,7 +60,7 @@ public class UserService : IUserService
 
     }
 
-    public async Task UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
+    public async Task<UserResponseDTO> UpdateUserAsync(Guid id, UpdateUserDTO updateUserDTO)
     {
         var user = await _userRepository.GetByIdAsync(id);
         if(user is null)
@@ -70,6 +71,8 @@ public class UserService : IUserService
         _mapper.Map(updateUserDTO,user);
 
         await _userRepository.UpdateAsync(user);
+
+        return _mapper.Map<UserResponseDTO>(user);
 
 
     }

@@ -56,7 +56,7 @@ public class TransactionService : ITransactionService
 
     }
 
-    public async Task UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
+    public async Task<TransactionResponseDTO> UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id);
         if(transaction is null)
@@ -66,6 +66,8 @@ public class TransactionService : ITransactionService
          _mapper.Map(updateTransactionDTO,transaction);
 
         await  _transactionRepository.UpdateAsync(transaction);
+
+        return _mapper.Map<TransactionResponseDTO>(transaction);
 
          
    }

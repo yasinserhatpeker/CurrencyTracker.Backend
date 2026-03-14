@@ -108,8 +108,8 @@ namespace CurrencyTracker.API.Controllers
                 {
                     return Unauthorized(ApiResponse<object>.Fail("You have no right to update this portfolio"));
                 }
-                await _portfolioService.UpdatePortfolioAsync(id, updatePortfolioDTO);
-                return Ok(ApiResponse<PortfolioResponseDTO>.Success("You updated the portfolio successfully."));
+               var updatedPortfolio = await _portfolioService.UpdatePortfolioAsync(id, updatePortfolioDTO);
+                return Ok(ApiResponse<PortfolioResponseDTO>.Success(updatedPortfolio,"You updated the portfolio successfully."));
             }
             catch (Exception ex)
             {
