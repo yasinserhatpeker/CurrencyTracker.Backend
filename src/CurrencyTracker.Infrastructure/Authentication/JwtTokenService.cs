@@ -5,7 +5,6 @@ using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
-using CurrencyTracker.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 

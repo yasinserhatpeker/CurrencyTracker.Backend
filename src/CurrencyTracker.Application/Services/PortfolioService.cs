@@ -2,7 +2,7 @@ using AutoMapper;
 using CurrencyTracker.Application.DTOs.Portfolios;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
-using CurrencyTracker.Domain.Interfaces;
+
 
 namespace CurrencyTracker.Application.Services;
 

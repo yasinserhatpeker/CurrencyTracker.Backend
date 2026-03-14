@@ -5,7 +5,7 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
-using CurrencyTracker.Domain.Interfaces;
+
 
 namespace CurrencyTracker.Application.Services;
 
