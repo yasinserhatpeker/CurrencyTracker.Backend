@@ -12,5 +12,6 @@ public class CreatePortfolioDTO
    
    [JsonIgnore]
    public Guid UserId { get; set; }
+   
 
 }
