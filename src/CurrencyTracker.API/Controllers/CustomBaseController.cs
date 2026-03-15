@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using CurrencyTracker.Application.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace CurrencyTracker.API.Controllers
             {
                  return userId;
             }
-            throw new UnauthorizedAccessException("Token is invalid, user ID is not found");
+            throw new UnauthorizedAccessException("You are not authorized");
         }
     }
 }

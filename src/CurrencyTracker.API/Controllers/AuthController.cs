@@ -43,7 +43,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _authService.LoginAsync(loginUserDTO);
-            return Ok(ApiResponse<object>.Success(result, "You logged in successfully."));
+            return Ok(ApiResponse<AuthResponseDTO>.Success(result, "You logged in successfully."));
 
         }
 
@@ -53,7 +53,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _tokenService.RefreshTokenAsync(refreshTokenDTO);
-            return Ok(ApiResponse<object>.Success(result, "You refreshed token successfully."));
+            return Ok(ApiResponse<AuthResponseDTO>.Success(result, "You refreshed token successfully."));
 
         }
 
@@ -63,7 +63,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _authService.GoogleLoginAsync(googleLoginDTO);
-            return Ok(ApiResponse<object>.Success(result, "You logged in successfully."));
+            return Ok(ApiResponse<AuthResponseDTO>.Success(result, "You logged in successfully."));
 
         }
 
