@@ -20,4 +20,7 @@ public class UpdateTransactionDTO
   [Required]
   public DateTime TransactionDate{get;set;}
 
+  [Required]
+  public string QuoteCurrency {get;set;} ="TRY";
+
 }

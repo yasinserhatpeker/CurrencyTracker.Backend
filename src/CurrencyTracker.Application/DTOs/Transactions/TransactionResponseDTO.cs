@@ -8,6 +8,7 @@ public class TransactionResponseDTO
    public Guid PortfolioId {get;set;} 
    public decimal Price {get;set;}
    public decimal Quantity {get;set;}
+   public string QuoteCurrency { get; set; } = default!;
    public DateTime TransactionDate {get;set;} 
    public string Symbol {get;set;} = default!;
    public decimal TotalValue {get;set;}
