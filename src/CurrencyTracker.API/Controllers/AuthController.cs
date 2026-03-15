@@ -2,6 +2,7 @@ using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.DTOs.Auth;
 using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Interfaces;
+using CurrencyTracker.Application.Wrappers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +33,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _authService.RegisterAsync(createUserDTO);
-            return StatusCode(201, result);
+            return StatusCode(201, ApiResponse<UserResponseDTO>.Success(result, "You registered successfully."));
 
         }
 
@@ -42,7 +43,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _authService.LoginAsync(loginUserDTO);
-            return Ok(result);
+            return Ok(ApiResponse<object>.Success(result, "You logged in successfully."));
 
         }
 
@@ -52,7 +53,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _tokenService.RefreshTokenAsync(refreshTokenDTO);
-            return Ok(result);
+            return Ok(ApiResponse<object>.Success(result, "You refreshed token successfully."));
 
         }
 
@@ -62,7 +63,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             var result = await _authService.GoogleLoginAsync(googleLoginDTO);
-            return Ok(result);
+            return Ok(ApiResponse<object>.Success(result, "You logged in successfully."));
 
         }
 
@@ -73,7 +74,7 @@ namespace CurrencyTracker.API.Controllers
 
             await _tokenService.LogoutAsync(refreshTokenDTO);
 
-            return Ok(new { message = "Logged out successfully" });
+            return Ok(ApiResponse<object>.Success(message: "You logged out successfully."));
 
         }
 
@@ -84,11 +85,11 @@ namespace CurrencyTracker.API.Controllers
             var IsEmailVerified = await _userAccountService.EmailVerificationAsync(token);
             if (IsEmailVerified)
             {
-                return Ok(new { message = "Your email is verified, you can now log in." });
+                return Ok(ApiResponse<object>.Success(message: "Email verification successful."));
             }
             else
             {
-                return BadRequest(new { message = "Please verify your email before log in." });
+                return BadRequest(ApiResponse<object>.Fail("Email verification failed."));
 
             }
 
@@ -100,7 +101,7 @@ namespace CurrencyTracker.API.Controllers
         {
 
             await _userAccountService.ForgotPasswordAsync(forgotPasswordDTO);
-            return Ok(new { message = "If your email is registered, reset link has been sent." });
+            return Ok(ApiResponse<object>.Success(message: "Password reset link has been sent to your email."));
 
         }
 
@@ -110,7 +111,7 @@ namespace CurrencyTracker.API.Controllers
         {
            
             await _userAccountService.ResetPasswordAsync(resetPasswordDTO);
-            return Ok(new { message = "Password is successfully changed." });
+            return Ok(ApiResponse<object>.Success(message: "Password reset successfully."));
 
         }
     }
