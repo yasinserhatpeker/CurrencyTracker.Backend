@@ -3,6 +3,7 @@ using CurrencyTracker.API.ServiceRegistration;
 using CurrencyTracker.Application.ServiceRegistration;
 using CurrencyTracker.Infrastructure.Persistence;
 using CurrencyTracker.Infrastructure.Persistence.ServiceRegistration;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddSwaggerGenServices();
 builder.Services.AddApiRegistrationServices();
+
 
 var app = builder.Build();
 

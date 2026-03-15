@@ -11,11 +11,10 @@
     <Folder Include="Models/" />
     <Folder Include="ServiceRegistration/" />
     <Folder Include="Services/" />
-    <Folder Include="Validators/" />
     <Folder Include="Validators/AuthValidator/" />
-    <Folder Include="Validators/PortfolioValidator/" />
-    <Folder Include="Validators/TransactionValidator/" />
-    <Folder Include="Validators/UserValidator/" />
+    <Folder Include="Validators/PortfoliosValidator/" />
+    <Folder Include="Validators/TransactionsValidator/" />
+    <Folder Include="Validators/UsersValidator/" />
     <Folder Include="Wrappers/" />
   </ItemGroup>
 

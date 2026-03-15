@@ -1,7 +1,7 @@
 using CurrencyTracker.Application.DTOs.Transactions;
 using FluentValidation;
 
-namespace CurrencyTracker.Application.Validators.TransactionValidator;
+namespace CurrencyTracker.Application.Validators.TransactionsValidator;
 
 public class CreateTransactionDtoValidator : AbstractValidator<CreateTransactionsDTO>
 {

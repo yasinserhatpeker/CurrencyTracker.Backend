@@ -2,6 +2,7 @@ using System;
 using CurrencyTracker.Application.DTOs.Transactions;
 using FluentValidation;
 
+namespace CurrencyTracker.Application.Validators.TransactionsValidator;
 public class UpdateTransactionDtoValidator : AbstractValidator<UpdateTransactionDTO>
 {
     public UpdateTransactionDtoValidator()

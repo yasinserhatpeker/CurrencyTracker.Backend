@@ -2,7 +2,7 @@ using System;
 using CurrencyTracker.Application.DTOs;
 using FluentValidation;
 
-namespace CurrencyTracker.Application.Validators.UserValidator;
+namespace CurrencyTracker.Application.Validators.UsersValidator;
 
 public class CreateUserDtoValidator : AbstractValidator<CreateUserDTO>
 {
