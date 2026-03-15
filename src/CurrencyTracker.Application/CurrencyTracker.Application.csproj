@@ -13,6 +13,8 @@
     <Folder Include="Services/" />
     <Folder Include="Validators/" />
     <Folder Include="Validators/AuthValidator/" />
+    <Folder Include="Validators/PortfolioValidator/" />
+    <Folder Include="Validators/TransactionValidator/" />
     <Folder Include="Validators/UserValidator/" />
     <Folder Include="Wrappers/" />
   </ItemGroup>
