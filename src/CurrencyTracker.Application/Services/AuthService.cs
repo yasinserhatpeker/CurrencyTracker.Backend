@@ -5,6 +5,7 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 
 namespace CurrencyTracker.Application.Services;
@@ -16,20 +17,23 @@ public class AuthService : IAuthService
     private readonly IEmailService _emailService;
     private readonly ITokenService _tokenService;
     private readonly IExternalAuthProvider _externalAuthProvider;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IEmailService emailService,IExternalAuthProvider externalAuthProvider, ITokenService tokenService)
+    public AuthService(IMapper mapper, IGenericRepository<User> userRepository, IEmailService emailService,IExternalAuthProvider externalAuthProvider, ITokenService tokenService, ILogger<AuthService> logger)
     {
         _mapper = mapper;
         _userRepository = userRepository;
         _emailService = emailService;
         _externalAuthProvider=externalAuthProvider;
         _tokenService=tokenService;
+        _logger=logger;
     }
     public async Task<UserResponseDTO> RegisterAsync(CreateUserDTO createUserDTO)
     {
         var existingUsers = await _userRepository.Find(u => u.Email == createUserDTO.Email);
         if (existingUsers.Any())
-        {
+        {   
+            _logger.LogWarning("This email is already used");
             throw new KeyNotFoundException("This email is already used");
         }
         var user = _mapper.Map<User>(createUserDTO);
@@ -43,6 +47,7 @@ public class AuthService : IAuthService
         user.IsEmailVerified = false; // ensure they are locked out until they verify
 
         await _userRepository.AddAsync(user); // adding to the DB
+        _logger.LogInformation("a new user is created for the email {Email} and the user id is :{Id}",user.Email,user.Id);
          
         var verificationLink =$"http://localhost/api/auth/verify-email?token={token}"; // verification-link
 
