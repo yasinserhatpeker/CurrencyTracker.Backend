@@ -1,5 +1,7 @@
 using CurrencyTracker.Application.Wrappers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace CurrencyTracker.API.ServiceRegistration;
 
@@ -25,6 +27,17 @@ public  static class ApiRegistration
 
         });
         services.AddEndpointsApiExplorer();
+
+       
+    }
+
+    public static WebApplicationBuilder AddSerilogConfiguration(this WebApplicationBuilder builder )
+    {
+               builder.Host.UseSerilog((context, loggerConfiguration) =>
+                    loggerConfiguration.ReadFrom.Configuration(context.Configuration)
+                );
+
+                return builder;
     }
 
    

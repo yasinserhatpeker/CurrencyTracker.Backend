@@ -3,9 +3,12 @@ using CurrencyTracker.API.ServiceRegistration;
 using CurrencyTracker.Application.ServiceRegistration;
 using CurrencyTracker.Infrastructure.Persistence;
 using CurrencyTracker.Infrastructure.Persistence.ServiceRegistration;
-using FluentValidation;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogConfiguration();
 
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(builder.Configuration);
@@ -22,6 +25,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
