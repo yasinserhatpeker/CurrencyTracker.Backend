@@ -55,6 +55,8 @@ public class AuthService : IAuthService
 
         return _mapper.Map<UserResponseDTO>(user); // mapping with autoMapper
 
+        
+
     }
 
     
