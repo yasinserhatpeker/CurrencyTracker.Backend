@@ -1,5 +1,4 @@
 using CurrencyTracker.Application.Wrappers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 

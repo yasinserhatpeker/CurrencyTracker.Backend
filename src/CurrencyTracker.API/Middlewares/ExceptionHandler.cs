@@ -3,12 +3,12 @@ using CurrencyTracker.Application.Wrappers;
 
 namespace CurrencyTracker.API.Middlewares;
 
-public class ExceptionMiddleware
+public class ExceptionHandler
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionMiddleware> _logger;
+    private readonly ILogger<ExceptionHandler> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+    public ExceptionHandler(RequestDelegate next, ILogger<ExceptionHandler> logger)
     {
         _next = next;
         _logger = logger;
