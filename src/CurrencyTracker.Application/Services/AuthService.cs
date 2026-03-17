@@ -47,7 +47,7 @@ public class AuthService : IAuthService
         user.IsEmailVerified = false; // ensure they are locked out until they verify
 
         await _userRepository.AddAsync(user); // adding to the DB
-        _logger.LogInformation("a new user is created for the email {Email} and the user id is :{Id}",user.Email,user.Id);
+        _logger.LogInformation("New user is created with the Id: {Id}",user.Id);
          
         var verificationLink =$"http://localhost/api/auth/verify-email?token={token}"; // verification-link
 
@@ -60,24 +60,24 @@ public class AuthService : IAuthService
 
         return _mapper.Map<UserResponseDTO>(user); // mapping with autoMapper
 
-        
-
     }
-
-    
+ 
     public async Task<AuthResponseDTO> LoginAsync(LoginUserDTO loginUserDTO)
     {
         var users = await _userRepository.Find(u=>u.Email == loginUserDTO.Email);
         var user = users.FirstOrDefault();
 
         if(user is null || user.PasswordHash is null || !BCrypt.Net.BCrypt.Verify(loginUserDTO.Password, user.PasswordHash)) 
-        {
+        {   
+            
             throw new UnauthorizedAccessException("Email or password is invalid");
         }
         if(!user.IsEmailVerified)
-        {
+        {   
+            _logger.LogWarning("Email is incorrect or expired for the user: {UserId}",user.Id);
             throw new UnauthorizedAccessException("Please verify your email before logging in.");
         }
+        _logger.LogInformation("Login is successful for the User: {UserId}",user.Id);
         return await _tokenService.GenerateAuthResponseAsync(user);
     }
 
@@ -86,24 +86,26 @@ public class AuthService : IAuthService
     {
        var externalUser = await _externalAuthProvider.ValidateGoogleTokenAsync(googleLoginDTO.IdToken);
        if(!externalUser.IsEmailVerified)
-        {
+        {   
             throw new Exception("Please verify your Google email");
         }
         var users = await _userRepository.Find(u=>u.GoogleId == externalUser.ProviderUserId);
         var existingUser = users.FirstOrDefault();
 
         if(existingUser is null)
-        {
+        {   
+
             existingUser = (await _userRepository.Find(u=>u.Email == externalUser.Email)).FirstOrDefault();
 
             if(existingUser is not null)
             {
                 existingUser.GoogleId = externalUser.ProviderUserId;
-                await _userRepository.UpdateAsync(existingUser);
+                 await _userRepository.UpdateAsync(existingUser);
+                 _logger.LogInformation("Google account is linked with the user: {UserId}",existingUser.Id);
             }
          }
         if(existingUser is null)
-            {
+            {  
                 existingUser = new User
                 {
                     Id=Guid.NewGuid(),
@@ -117,9 +119,17 @@ public class AuthService : IAuthService
                 };
 
             await _userRepository.AddAsync(existingUser);
+            _logger.LogInformation("New user is created via Google auth with the Id: {UserId}",existingUser.Id);
             }
-            return await _tokenService.GenerateAuthResponseAsync(existingUser);
+
+        else
+        {
+            _logger.LogInformation("User is logged via Google. User: {UserId}",existingUser.Id);
         }
+            return await _tokenService.GenerateAuthResponseAsync(existingUser);
+            
+        }
+       
 
 
 }
