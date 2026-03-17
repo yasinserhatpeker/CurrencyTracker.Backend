@@ -31,12 +31,15 @@ public class UserAccountService :IUserAccountService
         var user = users.FirstOrDefault();
 
         if(user is null)
-        {
+        {   
+           _logger.LogWarning("Email verification attempt is failed with invalid token");
             return false;
         }
         user.IsEmailVerified = true;
         user.EmailVerificationTokenHash=null;
         await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Email is verified for the User {UserId}",user.Id);
+        
         return true;
     }
 
@@ -46,7 +49,7 @@ public class UserAccountService :IUserAccountService
         var user = users.FirstOrDefault();
 
         if(user is null)
-        {    
+        {     _logger.LogWarning("Password-reset requested for non-existing email.");
              return; // returning silently so email enumeration attacks can be prevented
         }
 
@@ -57,6 +60,8 @@ public class UserAccountService :IUserAccountService
         user.ResetPasswordTokenExpiryTime = DateTime.UtcNow.AddMinutes(15);
 
         await _userRepository.UpdateAsync(user);
+
+        _logger.LogInformation("Password reset token is generated and sent for the User: {UserId}",user.Id);
 
         var resetLink =$"http://localhost:5172/api/auth/reset-password?token={token}"; // reset-link to reset your password
 
@@ -75,7 +80,8 @@ public class UserAccountService :IUserAccountService
         var user = users.FirstOrDefault();
 
         if(user is null || user.ResetPasswordTokenExpiryTime < DateTime.UtcNow)
-        {
+        {   
+            _logger.LogWarning("Password-reset request is invalid or expired.");
             throw new KeyNotFoundException("Invalid or expired reset password token");
         }
 
@@ -85,6 +91,7 @@ public class UserAccountService :IUserAccountService
         user.ResetPasswordTokenExpiryTime = null; //prevent token reuse
 
         await _userRepository.UpdateAsync(user);
+        _logger.LogInformation("Password reset is successful for the User {UserId}",user.Id);
 
     }
 }
