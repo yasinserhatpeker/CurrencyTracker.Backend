@@ -2,6 +2,7 @@ using CurrencyTracker.Application.DTOs.Users;
 using CurrencyTracker.Application.Helpers;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 
 namespace CurrencyTracker.Application.Services;
@@ -11,12 +12,15 @@ public class UserAccountService :IUserAccountService
   
    private readonly IGenericRepository<User> _userRepository;
    private readonly IEmailService _emailService;
+
+   private readonly ILogger<UserAccountService> _logger;
     
-    public UserAccountService(IGenericRepository<User> userRepository,IEmailService emailService)
+    public UserAccountService(IGenericRepository<User> userRepository,IEmailService emailService,ILogger<UserAccountService> logger)
     {
        
         _userRepository = userRepository;
         _emailService = emailService;
+        _logger = logger;
 
     }
 
@@ -42,7 +46,7 @@ public class UserAccountService :IUserAccountService
         var user = users.FirstOrDefault();
 
         if(user is null)
-        {
+        {    
              return; // returning silently so email enumeration attacks can be prevented
         }
 

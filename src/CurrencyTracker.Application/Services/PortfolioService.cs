@@ -80,10 +80,12 @@ public class PortfolioService : IPortfolioService
             throw new KeyNotFoundException("No portfolio is found");
 
         }
+        var oldName = portfolio.Name;
+        
         _mapper.Map(updatePortfolioDTO, portfolio);
         await _portfolioRepository.UpdateAsync(portfolio);
 
-        _logger.LogInformation("a portfolio is updated for the user {UserId} and the id of the portfolio is {Id}", portfolio.UserId, portfolio.Id);
+        _logger.LogInformation("a portfolio is updated. OldName={OldName}, NewName={NewName} and its UserId={UserId}", oldName, portfolio.Name, portfolio.UserId);
 
         return _mapper.Map<PortfolioResponseDTO>(portfolio);
 
