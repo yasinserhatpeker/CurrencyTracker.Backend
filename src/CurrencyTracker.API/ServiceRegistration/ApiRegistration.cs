@@ -12,18 +12,18 @@ public  static class ApiRegistration
         services.AddControllers()
         .ConfigureApiBehaviorOptions(options =>
         {
-          options.InvalidModelStateResponseFactory = context =>
-          {
-              var errors = context.ModelState
-              .Where(e => e.Value?.Errors.Count > 0)
-              .SelectMany(x => x.Value.Errors)
-              .Select(x=>x.ErrorMessage)
-              .ToList();
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var errors = context.ModelState
+                .Where(e => e.Value?.Errors.Count > 0)
+                .SelectMany(x => x.Value.Errors)
+                .Select(x => x.ErrorMessage)
+                .ToList();
 
 
-              var responseObj = ApiResponse<object>.Fail(errors,"Validation errors occured");
-              return new BadRequestObjectResult(responseObj);
-          };
+                var responseObj = ApiResponse<object>.Fail(errors, "Validation errors occured");
+                return new BadRequestObjectResult(responseObj);
+            };
 
         });
         services.AddEndpointsApiExplorer();
