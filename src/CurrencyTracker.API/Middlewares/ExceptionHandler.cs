@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Mime;
 using CurrencyTracker.Application.Wrappers;
 
 namespace CurrencyTracker.API.Middlewares;
@@ -31,7 +32,7 @@ public class ExceptionHandler
 
     private static Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
+        context.Response.ContentType = MediaTypeNames.Application.Json;
 
 
         var statusCode = exception switch
