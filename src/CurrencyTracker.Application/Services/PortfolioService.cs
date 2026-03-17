@@ -26,6 +26,12 @@ public class PortfolioService : IPortfolioService
         var newPortfolio = _mapper.Map<Portfolio>(createPortfolioDTO);
         await _portfolioRepository.AddAsync(newPortfolio);
 
+        if(newPortfolio is null) 
+        {
+            _logger.LogWarning("portfolio is not created for the user {UserId}",createPortfolioDTO.UserId);
+            throw new KeyNotFoundException("Portfolio is not created");
+        }
+
         _logger.LogInformation("a new portfolio is created for the user {UserId} and the id of the portfolio is {Id}",createPortfolioDTO.UserId,newPortfolio.Id);
 
         return  _mapper.Map<PortfolioResponseDTO>(newPortfolio);
