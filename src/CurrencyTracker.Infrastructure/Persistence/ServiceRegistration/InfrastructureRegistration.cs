@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
+using Polly.Extensions.Http;
 
 namespace CurrencyTracker.Infrastructure.Persistence.ServiceRegistration;
 
@@ -42,8 +44,30 @@ public static class InfrastructureRegistration
              };
          });
 
-      
-         
-        
+         services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
+         {
+             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"]!);
+             client.Timeout = TimeSpan.FromSeconds(10);
+         })
+         .AddPolicyHandler(GetResiliencePolicy());
+
+    
+    }
+
+    public static IAsyncPolicy<HttpResponseMessage> GetResiliencePolicy()
+    {
+        var retryPolicy = HttpPolicyExtensions // retry 3 times
+        .HandleTransientHttpError()
+        .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+        .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+        var circuitBreaker = HttpPolicyExtensions // circuit breaker, after 5 consecutive failures, close the fkin door for 30 seconds
+        .HandleTransientHttpError()
+        .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+
+        return Policy.WrapAsync(retryPolicy, circuitBreaker);
     }
 }
+
+    
+
