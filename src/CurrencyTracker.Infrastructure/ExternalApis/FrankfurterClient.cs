@@ -26,7 +26,7 @@ public class FrankfurterClient : IPriceProvider
             return CreateStaticPrice(symbol, 1.0m, quoteCurrency);
         }
 
-        var url =$"latest?from={quoteCurrency.ToUpper()}&to={symbol.ToUpper()}"; // url -> latest?from=USD&to=EUR
+        var url =$"latest?from={quoteCurrency.ToUpper()}&to={symbol.ToUpper()}"; // example -> url -> latest?from=USD&to=EUR
 
        var response = await _client.GetFromJsonAsync<FrankfurterResponse>(url);
 

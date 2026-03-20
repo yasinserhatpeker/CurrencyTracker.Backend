@@ -3,8 +3,8 @@ using AutoMapper;
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
 using Microsoft.Extensions.Logging;
-using CurrencyTracker.Application.DTOs;
-
+using System.IO.Compression;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CurrencyTracker.Application.Services;
 
@@ -33,7 +33,7 @@ public class TransactionService : ITransactionService
        transaction.TransactionDate = DateTime.UtcNow;
 
        await _transactionRepository.AddAsync(transaction);
-       
+
        await _transactionRepository.SaveAsync();
        
        _logger.LogInformation("A TRANSACTION IS CREATED: {Id} | Symbol {Symbol} Provider {Provider}",transaction.Id, transaction.Symbol, marketData.Source);
@@ -69,31 +69,48 @@ public class TransactionService : ITransactionService
     {
       var portfolioTransactions = await _transactionRepository.Find(x=>x.PortfolioId==portfolioId);
  
-       return _mapper.Map<IEnumerable<TransactionResponseDTO>>(portfolioTransactions);
+      if(portfolioTransactions is null | !portfolioTransactions!.Any())
+      {
+        _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", portfolioId);
+        
+        return Enumerable.Empty<TransactionResponseDTO>();
+      }         
+      
+
+      return _mapper.Map<IEnumerable<TransactionResponseDTO>>(portfolioTransactions);
+         
+   }   
 
 
-    }
+    
 
     public async Task<TransactionResponseDTO> UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id);
         if(transaction is null)
-        {   
+        {
             _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);
-            throw new KeyNotFoundException("No transaction is found");
+            throw new KeyNotFoundException("Transaction not found");
         }
 
-         var oldPrice = transaction.Price;
-         var oldQuantity = transaction.Quantity;
+        var oldPrice=transaction.Price;
+        var oldQuantity= transaction.Quantity;
 
-         _mapper.Map(updateTransactionDTO,transaction);
+        _mapper.Map(updateTransactionDTO,transaction);
 
-        await  _transactionRepository.UpdateAsync(transaction);
+        var marketData = await _marketService.GetMarketPriceAsync(transaction.Symbol, transaction.QuoteCurrency);
 
-        _logger.LogInformation("AUDIT: Transaction updated. Id={Id}, OldPrice={OldPrice}, OldQuantity={OldQuantity}, NewPrice={NewPrice}, NewQuantity={NewQuantity}", transaction.Id, oldPrice, oldQuantity, transaction.Price, transaction.Quantity);
+        transaction.Price =marketData.Price;
+        transaction.TransactionDate = DateTime.UtcNow;
+
+        await _transactionRepository.UpdateAsync(transaction);
+        await _transactionRepository.SaveAsync();   
+
+        _logger.LogInformation("AUDIT: Transaction {Id} updated. Price: {OldP} -> {NewP}, Qty: {OldQ} -> {NewQ}, Source: {Source}", 
+        transaction.Id, oldPrice, transaction.Price, oldQuantity, transaction.Quantity, marketData.Source);
 
         return _mapper.Map<TransactionResponseDTO>(transaction);
 
-         
-   }
-}
+    }
+ }
+
