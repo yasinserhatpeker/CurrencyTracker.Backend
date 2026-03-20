@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http.Json;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.Interfaces;
 
@@ -17,8 +18,31 @@ public class FrankfurterClient : IPriceProvider
         _client = client;
     }
 
-    public Task<MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency)
+    public async Task<MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency)
     {
+          if(symbol.Equals(quoteCurrency, StringComparison.OrdinalIgnoreCase))
+        {
+            return CreateStaticPrice(symbol, 1.0m, quoteCurrency);
+        }
+
+        var url =$"latest?from={quoteCurrency.ToUpper()}&to={symbol.ToUpper()}"; // url -> latest?from=USD&to=EUR
+
+       var response = await _client.GetFromJsonAsync<FrankfurterResponse>(url);
+
+       if(response!.Rates is null || !response.Rates.TryGetValue(symbol.ToUpper(), out var price))
+        {
+            throw new KeyNotFoundException($"Price for {symbol.ToUpper()} and {quoteCurrency.ToUpper()} is not found");
+        }
+
+       return new MarketPriceDTO
+       {
+           Symbol = symbol.ToUpper(),
+           Price = price,
+           QuoteCurrency=quoteCurrency.ToUpper(),
+           Source = ProviderName,
+           LastUpdated = response!.Date,
+           ChangePercentage24H = null
+       };
 
     }
 
