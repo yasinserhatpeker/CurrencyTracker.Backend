@@ -3,6 +3,7 @@ using AutoMapper;
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
 using Microsoft.Extensions.Logging;
+using CurrencyTracker.Application.DTOs;
 
 
 namespace CurrencyTracker.Application.Services;
@@ -14,22 +15,30 @@ public class TransactionService : ITransactionService
 
     private readonly ILogger<TransactionService> _logger;
 
-    public TransactionService(IMapper mapper, IGenericRepository<Transaction> transactionRepository,ILogger<TransactionService> logger)
+    private readonly IMarketService _marketService;
+
+    public TransactionService(IMapper mapper, IGenericRepository<Transaction> transactionRepository,ILogger<TransactionService> logger, IMarketService marketService)
     {
         _mapper=mapper;
         _transactionRepository=transactionRepository;
         _logger = logger;
+        _marketService = marketService;
     }
     public async Task<TransactionResponseDTO> CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO)
     {
-        var transaction = _mapper.Map<Transaction>(createTransactionsDTO);
-        
-         await _transactionRepository.AddAsync(transaction);
+       var marketData = await _marketService.GetMarketPriceAsync(createTransactionsDTO.Symbol, createTransactionsDTO.QuoteCurrency);
 
-         _logger.LogInformation("new transaction created for the portfolio : {PortfolioId} and the id of the transaction is {Id}, the Currency is {QuoteCurrency}, the symbol is {Symbol}, the price is {Price}, the quantity is {Quantity}", transaction.PortfolioId, transaction.Id, transaction.QuoteCurrency, transaction.Symbol, transaction.Price, transaction.Quantity);
+       var transaction = _mapper.Map<Transaction>(createTransactionsDTO);
+       transaction.Price =marketData.Price;
+       transaction.TransactionDate = DateTime.UtcNow;
 
-        return _mapper.Map<TransactionResponseDTO>(transaction);
+       await _transactionRepository.AddAsync(transaction);
+       await _transactionRepository.SaveAsync();
+       
+       _logger.LogInformation("A TRANSACTION IS CREATED: {Id} | Symbol {Symbol} Provider {Provider}",transaction.Id, transaction.Symbol, marketData.Source);
+    
 
+       return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
     public async Task DeleteTransactionAsync(Guid id)
