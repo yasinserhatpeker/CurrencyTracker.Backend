@@ -4,7 +4,7 @@ namespace CurrencyTracker.Application.Interfaces;
 
 public interface IPriceProvider
 {
-    Task<MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency);
+    Task <MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency);
     bool IsSupported(string symbol);
 
     string ProviderName { get; }

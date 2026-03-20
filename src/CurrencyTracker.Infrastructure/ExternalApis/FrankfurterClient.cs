@@ -2,6 +2,7 @@ using System;
 using System.Net.Http.Json;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.Interfaces;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace CurrencyTracker.Infrastructure.ExternalApis;
 
