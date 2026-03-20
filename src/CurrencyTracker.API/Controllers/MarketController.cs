@@ -17,14 +17,14 @@ namespace CurrencyTracker.API.Controllers
         {
             _marketService = marketService;
         }
-         [HttpGet("price/{symbol}")]
-         public async Task<IActionResult> GetLatestData([FromRoute] string symbol, [FromQuery] string quoteCurrency="TRY")
+         [HttpGet("price/{baseCurrency}")]
+         public async Task<IActionResult> GetLatestData([FromRoute] string baseCurrency, [FromQuery] string quoteCurrency="TRY")
         {   
-            if(string.IsNullOrWhiteSpace(symbol))
+            if(string.IsNullOrWhiteSpace(baseCurrency))
             {
-                return BadRequest(ApiResponse<object>.Fail("Symbol is required"));
+                return BadRequest(ApiResponse<object>.Fail("BaseCurrency is required"));
             }
-            var price = await _marketService.GetMarketPriceAsync(symbol, quoteCurrency);
+            var price = await _marketService.GetMarketPriceAsync(baseCurrency, quoteCurrency);
 
             return Ok(ApiResponse<MarketPriceDTO>.Success(price, "You retrieved the price successfully."));
 
