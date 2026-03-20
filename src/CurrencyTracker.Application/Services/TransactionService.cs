@@ -3,8 +3,7 @@ using AutoMapper;
 using CurrencyTracker.Application.DTOs.Transactions;
 using CurrencyTracker.Application.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.IO.Compression;
-using System.Security.Cryptography.X509Certificates;
+
 
 namespace CurrencyTracker.Application.Services;
 
