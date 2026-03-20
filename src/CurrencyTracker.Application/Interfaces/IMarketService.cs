@@ -3,7 +3,7 @@ using CurrencyTracker.Application.DTOs;
 
 namespace CurrencyTracker.Application.Interfaces;
 
-public interface IMarketPrice
-{  
+public interface IMarketService
+{ 
     Task<MarketPriceDTO> GetMarketPriceAsync(string symbol, string quoteCurrency);
 }
