@@ -44,12 +44,15 @@ public static class InfrastructureRegistration
                  ClockSkew = TimeSpan.Zero
              };
          });
+         
+         services.AddTransient<ExternalApiLoggingHandler>();
 
          services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
          {
              client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"]??throw new InvalidCastException("FrankfurterApi not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
          })
+         .AddHttpMessageHandler<ExternalApiLoggingHandler>()
          .AddPolicyHandler(GetResiliencePolicy());
 
     
