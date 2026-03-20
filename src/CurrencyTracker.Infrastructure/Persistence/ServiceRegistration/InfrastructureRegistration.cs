@@ -3,6 +3,7 @@ using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Application.Services;
 using CurrencyTracker.Infrastructure.Authentication;
 using CurrencyTracker.Infrastructure.EmailVerification;
+using CurrencyTracker.Infrastructure.ExternalApis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,7 +47,7 @@ public static class InfrastructureRegistration
 
          services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
          {
-             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"]!);
+             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"]??throw new InvalidCastException("FrankfurterApi not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
          })
          .AddPolicyHandler(GetResiliencePolicy());
