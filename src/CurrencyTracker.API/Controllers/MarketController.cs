@@ -24,7 +24,7 @@ namespace CurrencyTracker.API.Controllers
             {
                 return BadRequest(ApiResponse<object>.Fail("Symbol is required"));
             }
-            var price = await _marketService.GetMarketPriceAsync(symbol,quoteCurrency);
+            var price = await _marketService.GetMarketPriceAsync(symbol, quoteCurrency);
 
             return Ok(ApiResponse<MarketPriceDTO>.Success(price, "You retrieved the price successfully."));
 

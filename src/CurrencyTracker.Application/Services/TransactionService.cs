@@ -79,10 +79,6 @@ public class TransactionService : ITransactionService
       return _mapper.Map<IEnumerable<TransactionResponseDTO>>(portfolioTransactions);
          
    }   
-
-
-    
-
     public async Task<TransactionResponseDTO> UpdateTransactionAsync(Guid id, UpdateTransactionDTO updateTransactionDTO)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id);

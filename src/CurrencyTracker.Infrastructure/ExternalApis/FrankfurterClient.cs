@@ -2,7 +2,7 @@ using System;
 using System.Net.Http.Json;
 using CurrencyTracker.Application.DTOs;
 using CurrencyTracker.Application.Interfaces;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
+
 
 namespace CurrencyTracker.Infrastructure.ExternalApis;
 
@@ -19,43 +19,52 @@ public class FrankfurterClient : IPriceProvider
         _client = client;
     }
 
-    public async Task<MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency)
+    public async Task<MarketPriceDTO> GetPriceAsync(string baseCurrency, string quoteCurrency)
     {
-          if(symbol.Equals(quoteCurrency, StringComparison.OrdinalIgnoreCase))
+         var baseAsset = baseCurrency.ToUpper();
+         var quoteAsset = quoteCurrency.ToUpper();
+
+         if(baseAsset == quoteAsset)
         {
-            return CreateStaticPrice(symbol, 1.0m, quoteCurrency);
+            return CreateStaticPrice(baseCurrency, 1.0m, quoteCurrency);
+
         }
 
-        var url =$"latest?from={quoteCurrency.ToUpper()}&to={symbol.ToUpper()}"; // example -> url -> latest?from=USD&to=EUR
+        var url = $"latest?from={baseAsset}&to={quoteAsset}";
 
-       var response = await _client.GetFromJsonAsync<FrankfurterResponse>(url);
-
-       if(response!.Rates is null || !response.Rates.TryGetValue(symbol.ToUpper(), out var price))
+        var response = await _client.GetFromJsonAsync<FrankfurterResponse>(url);
+        
+        if(response?.Rates is null || !response.Rates.TryGetValue(quoteAsset, out var price))
         {
-            throw new KeyNotFoundException($"Price for {symbol.ToUpper()} and {quoteCurrency.ToUpper()} is not found");
+    
+        throw new KeyNotFoundException($"{quoteAsset} is not found for the {baseCurrency}");
         }
 
-       return new MarketPriceDTO
-       {
-           Symbol = symbol.ToUpper(),
-           Price = price,
-           QuoteCurrency=quoteCurrency.ToUpper(),
-           Source = ProviderName,
-           LastUpdated = response!.Date,
-           ChangePercentage24H = null
-       };
-
+        return new MarketPriceDTO
+        {
+            BaseCurrency = baseAsset,
+            Price = price,
+            QuoteCurrency = quoteAsset,
+            Source = ProviderName,
+            LastUpdated = response.Date
+        };
     }
 
-    public bool IsSupported(string symbol)
+    public bool IsSupported(string baseCurrency)
     {
-        var fiatCurrencies = new[] { "USD", "EUR", "TRY", "GBP", "JPY", "AUD", "CAD" };
-        return fiatCurrencies.Contains(symbol.ToUpper());
+        var supportedCurrencies = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "USD", "EUR", "TRY", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY", 
+        "SEK", "NZD", "KRW", "SGD", "NOK", "MXN", "INR", "RUB", "ZAR", 
+        "BRL", "HKD", "IDR", "ILS", "PHP", "PLN", "RON", "THB", "DKK",
+        "HUF", "CZK", "ISK", "BGN", "MYR"
+        };
+        return !string.IsNullOrWhiteSpace(baseCurrency) && supportedCurrencies.Contains(baseCurrency.Trim());
     }
 
-    private MarketPriceDTO CreateStaticPrice(string symbol, decimal price, string quote) => new()
+    private MarketPriceDTO CreateStaticPrice(string BaseCurrency, decimal price, string quote) => new()
     {
-        Symbol = symbol,
+        BaseCurrency = BaseCurrency,
         Price = price,
         QuoteCurrency = quote,
         Source = ProviderName,

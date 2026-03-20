@@ -16,19 +16,19 @@ public class MarketService : IMarketService
       _logger = logger;
    }
 
-    public async Task<MarketPriceDTO> GetMarketPriceAsync(string symbol, string quoteCurrency)
+    public async Task<MarketPriceDTO> GetMarketPriceAsync(string baseCurrency, string quoteCurrency)
     {
-        var provider = _providers.FirstOrDefault(x=>x.IsSupported(symbol));
+        var provider = _providers.FirstOrDefault(x=>x.IsSupported(baseCurrency));
         if(provider is null)
         {
-            _logger.LogWarning("no provider is found for the symbol {Symbol}", symbol);
+            _logger.LogWarning("no provider is found for the symbol {Symbol}", baseCurrency);
             throw new KeyNotFoundException("No provider is found for the symbol");
         }
 
         try
         {
-            var priceData = await provider.GetPriceAsync(symbol, quoteCurrency);
-           _logger.LogInformation("Price is fetched for the symbol {Symbol} and the provider is {Provider}", symbol, provider.ProviderName);
+            var priceData = await provider.GetPriceAsync(baseCurrency, quoteCurrency);
+           _logger.LogInformation("Price is fetched for the symbol {Symbol} and the provider is {Provider}", baseCurrency, provider.ProviderName);
             return priceData;
 
 
@@ -36,7 +36,7 @@ public class MarketService : IMarketService
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Error while fetching the price for the symbol {Symbol} and the provider is {Provider}", symbol, provider.ProviderName);
+            _logger.LogError(ex, "Error while fetching the price for the symbol {Symbol} and the provider is {Provider}", baseCurrency, provider.ProviderName);
             throw;
             
         }
