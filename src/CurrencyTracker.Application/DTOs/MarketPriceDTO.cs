@@ -5,6 +5,7 @@ namespace CurrencyTracker.Application.DTOs;
 public record MarketPriceDTO
 {
     public string Symbol { get; init; } = string.Empty;
+    public decimal Price { get; init; }
     public DateTime LastUpdated { get; init; }
     public decimal? ChangePercentage24H { get; init; }
     public string QuoteCurrency { get; init; } = string.Empty;

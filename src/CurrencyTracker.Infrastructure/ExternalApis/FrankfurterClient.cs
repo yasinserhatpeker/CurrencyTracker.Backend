@@ -8,22 +8,33 @@ public class FrankfurterClient : IPriceProvider
 {
     public string ProviderName => "Frankfurter";
 
-    public int Priority =>10;
+    public int Priority => 10;
 
-   private readonly HttpClient _client;
+    private readonly HttpClient _client;
 
-   public FrankfurterClient(HttpClient client)
+    public FrankfurterClient(HttpClient client)
     {
-        _client=client;
+        _client = client;
     }
 
     public Task<MarketPriceDTO> GetPriceAsync(string symbol, string quoteCurrency)
     {
-        throw new NotImplementedException();
+
     }
 
     public bool IsSupported(string symbol)
     {
-        throw new NotImplementedException();
+        var fiatCurrencies = new[] { "USD", "EUR", "TRY", "GBP", "JPY", "AUD", "CAD" };
+        return fiatCurrencies.Contains(symbol.ToUpper());
     }
+
+    private MarketPriceDTO CreateStaticPrice(string symbol, decimal price, string quote) => new()
+    {
+        Symbol = symbol,
+        Price = price,
+        QuoteCurrency = quote,
+        Source = ProviderName,
+        LastUpdated = DateTime.UtcNow
+
+    };
 }
