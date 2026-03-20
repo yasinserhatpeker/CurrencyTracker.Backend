@@ -33,6 +33,7 @@ public class TransactionService : ITransactionService
        transaction.TransactionDate = DateTime.UtcNow;
 
        await _transactionRepository.AddAsync(transaction);
+       
        await _transactionRepository.SaveAsync();
        
        _logger.LogInformation("A TRANSACTION IS CREATED: {Id} | Symbol {Symbol} Provider {Provider}",transaction.Id, transaction.Symbol, marketData.Source);
