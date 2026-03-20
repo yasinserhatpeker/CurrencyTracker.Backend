@@ -16,6 +16,7 @@ namespace CurrencyTracker.Application.ServiceRegistration;
        services.AddScoped<ITransactionService, TransactionService>();
        services.AddScoped<IAuthService, AuthService>();
        services.AddScoped<IUserAccountService,UserAccountService>();
+       services.AddScoped<IMarketService, MarketService>();
        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
       
     }
