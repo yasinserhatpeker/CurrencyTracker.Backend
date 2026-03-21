@@ -40,6 +40,11 @@ public class FrankfurterClient : IPriceProvider
         throw new KeyNotFoundException($"{quoteAsset} is not found for the {baseCurrency}");
         }
 
+        if(price<=0)
+        {
+            throw new InvalidOperationException($"Invalid market price {price} received for {baseAsset}.");
+        }
+
         return new MarketPriceDTO
         {
             BaseCurrency = baseAsset,
