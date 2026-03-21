@@ -25,7 +25,7 @@ public class TransactionService : ITransactionService
     }
     public async Task<TransactionResponseDTO> CreateTransactionAsync(CreateTransactionsDTO createTransactionsDTO)
     {
-       var marketData = await _marketService.GetMarketPriceAsync(createTransactionsDTO.Symbol, createTransactionsDTO.QuoteCurrency);
+       var marketData = await _marketService.GetMarketPriceAsync(createTransactionsDTO.BaseCurrency, createTransactionsDTO.QuoteCurrency);
 
        var transaction = _mapper.Map<Transaction>(createTransactionsDTO);
        transaction.Price =marketData.Price;
@@ -93,16 +93,11 @@ public class TransactionService : ITransactionService
 
         _mapper.Map(updateTransactionDTO,transaction);
 
-        var marketData = await _marketService.GetMarketPriceAsync(transaction.Symbol, transaction.QuoteCurrency);
-
-        transaction.Price =marketData.Price;
-        transaction.TransactionDate = DateTime.UtcNow;
-
         await _transactionRepository.UpdateAsync(transaction);
         await _transactionRepository.SaveAsync();   
 
-        _logger.LogInformation("AUDIT: Transaction {Id} updated. Price: {OldP} -> {NewP}, Qty: {OldQ} -> {NewQ}, Source: {Source}", 
-        transaction.Id, oldPrice, transaction.Price, oldQuantity, transaction.Quantity, marketData.Source);
+        _logger.LogInformation("AUDIT: Transaction {Id} updated. Price: {OldP} -> {NewP}, Qty: {OldQ} -> {NewQ} and transaction date {Date}", 
+        transaction.Id, oldPrice, transaction.Price, oldQuantity, transaction.Quantity, transaction.TransactionDate);
 
         return _mapper.Map<TransactionResponseDTO>(transaction);
 
