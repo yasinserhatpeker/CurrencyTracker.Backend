@@ -21,14 +21,14 @@ public class MarketService : IMarketService
         var provider = _providers.FirstOrDefault(x=>x.IsSupported(baseCurrency));
         if(provider is null)
         {
-            _logger.LogWarning("no provider is found for the symbol {Symbol}", baseCurrency);
-            throw new KeyNotFoundException("No provider is found for the symbol");
+            _logger.LogWarning("no provider is found for the BaseCurrency {BaseCurrency}", baseCurrency);
+            throw new KeyNotFoundException("No provider is found for the BaseCurrency");
         }
 
         try
         {
             var priceData = await provider.GetPriceAsync(baseCurrency, quoteCurrency);
-           _logger.LogInformation("Price is fetched for the symbol {Symbol} and the provider is {Provider}", baseCurrency, provider.ProviderName);
+           _logger.LogInformation("Price is fetched for the BaseCurrency {BaseCurrency} and the provider is {Provider}", baseCurrency, provider.ProviderName);
             return priceData;
 
 
@@ -36,7 +36,7 @@ public class MarketService : IMarketService
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex, "Error while fetching the price for the symbol {Symbol} and the provider is {Provider}", baseCurrency, provider.ProviderName);
+            _logger.LogError(ex, "Error while fetching the price for the BaseCurrency {BaseCurrency} and the provider is {Provider}", baseCurrency, provider.ProviderName);
             throw;
             
         }

@@ -35,7 +35,7 @@ public class TransactionService : ITransactionService
 
        await _transactionRepository.SaveAsync();
        
-       _logger.LogInformation("A TRANSACTION IS CREATED: {Id} | Symbol {Symbol} Provider {Provider}",transaction.Id, transaction.BaseCurrency, marketData.Source);
+       _logger.LogInformation("A TRANSACTION IS CREATED: {Id} | BaseCurrency {BaseCurrency} Provider {Provider}",transaction.Id, transaction.BaseCurrency, marketData.Source);
     
 
        return _mapper.Map<TransactionResponseDTO>(transaction);
