@@ -9,7 +9,7 @@ public class CreateTransactionDtoValidator : AbstractValidator<CreateTransaction
     {
         RuleFor(x => x.PortfolioId).NotEmpty();
         RuleFor(x => x.TransactionDate).NotEmpty();
-        RuleFor(x => x.Symbol).NotEmpty().MaximumLength(10).MinimumLength(2);
+        RuleFor(x => x.BaseCurrency).NotEmpty().MaximumLength(10).MinimumLength(2);
         RuleFor(x => x.Quantity).NotEmpty().GreaterThan(0);
         RuleFor(x => x.Price).NotEmpty().GreaterThan(0);
         RuleFor(x => x.TransactionType).NotEmpty().IsInEnum();
