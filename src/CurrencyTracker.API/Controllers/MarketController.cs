@@ -10,17 +10,16 @@ namespace CurrencyTracker.API.Controllers
     [ApiController]
     public class MarketController : CustomBaseController
     {
-
         private readonly IMarketService _marketService;
 
         public MarketController(IMarketService marketService)
         {
             _marketService = marketService;
         }
-         [HttpGet("price/{baseCurrency}")]
-         public async Task<IActionResult> GetLatestData([FromRoute] string baseCurrency, [FromQuery] string quoteCurrency="TRY")
-        {   
-            if(string.IsNullOrWhiteSpace(baseCurrency))
+        [HttpGet("price/{baseCurrency}")]
+        public async Task<IActionResult> GetLatestData([FromRoute] string baseCurrency, [FromQuery] string quoteCurrency = "TRY")
+        {
+            if (string.IsNullOrWhiteSpace(baseCurrency))
             {
                 return BadRequest(ApiResponse<object>.Fail("BaseCurrency is required"));
             }

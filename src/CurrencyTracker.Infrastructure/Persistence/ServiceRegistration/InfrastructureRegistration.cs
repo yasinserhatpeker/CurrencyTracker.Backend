@@ -49,7 +49,7 @@ public static class InfrastructureRegistration
 
          services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
          {
-             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"]??throw new InvalidCastException("FrankfurterApi not found in the configuration file"));
+             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidCastException("FrankfurterApi not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
          })
          .AddHttpMessageHandler<ExternalApiLoggingHandler>()
