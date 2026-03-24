@@ -19,7 +19,7 @@ public static class InfrastructureRegistration
     public static void AddInfrastructureServices(this IServiceCollection services,IConfiguration configuration)
     {
          services.AddScoped<ITokenService,JwtTokenService>();
-         services.AddScoped<IExternalAuthProvider, GoogleAuthProvider>();
+         services.AddScoped<IExternalAuthProvider,GoogleAuthProvider>();
          services.AddScoped<IEmailService, MockEmailService>();
 
          var jwtSettings = configuration.GetSection("JwtSettings");
@@ -49,7 +49,7 @@ public static class InfrastructureRegistration
 
          services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
          {
-             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidCastException("FrankfurterApi not found in the configuration file"));
+             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidCastException("FrankfurterApi is not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
          })
          .AddHttpMessageHandler<LoggingHandler>()

@@ -8,7 +8,7 @@ namespace CurrencyTracker.Application.Services;
 public class MarketService : IMarketService
 {
    private readonly IEnumerable<IPriceProvider> _providers;
-   private readonly ILogger<MarketService> _logger;
+   private readonly ILogger<MarketService> _logger; 
 
    public MarketService(IEnumerable<IPriceProvider> providers, ILogger<MarketService> logger)
    {
