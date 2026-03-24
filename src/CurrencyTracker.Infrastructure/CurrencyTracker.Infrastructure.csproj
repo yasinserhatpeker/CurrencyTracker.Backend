@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <Folder Include="Authentication/" />
-    <Folder Include="ExternalApis/" />
     <Folder Include="Repositories/" />
   </ItemGroup>
 
