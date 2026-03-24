@@ -71,6 +71,11 @@ public class PortfolioService : IPortfolioService
 
     }
 
+    public Task<PortfolioResponseDTO> GetPortfolioSummaryAsync(Guid id, PortfolioSummaryDTO portfolioSummaryDTO)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
     {
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
