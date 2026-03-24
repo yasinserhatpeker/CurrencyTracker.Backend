@@ -15,7 +15,7 @@ public  static class ApiRegistration
             {
                 var errors = context.ModelState
                 .Where(e => e.Value?.Errors.Count > 0)
-                .SelectMany(x => x.Value.Errors)
+                .SelectMany(x => x.Value!.Errors)
                 .Select(x => x.ErrorMessage)
                 .ToList();
 
