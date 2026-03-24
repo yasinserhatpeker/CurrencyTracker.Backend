@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace CurrencyTracker.Infrastructure.ExternalApis;
 
-public class ExternalApiLoggingHandler : DelegatingHandler
+public class LoggingHandler : DelegatingHandler
 {
-   private readonly ILogger<ExternalApiLoggingHandler> _logger;
+   private readonly ILogger<LoggingHandler> _logger;
 
-   public ExternalApiLoggingHandler(ILogger<ExternalApiLoggingHandler> logger)
+   public LoggingHandler(ILogger<LoggingHandler> logger)
    {
       _logger = logger;
    }    
