@@ -55,17 +55,16 @@ public static class InfrastructureRegistration
          .AddHttpMessageHandler<ExternalApiLoggingHandler>()
          .AddPolicyHandler(GetResiliencePolicy());
 
-    
     }
 
     public static IAsyncPolicy<HttpResponseMessage> GetResiliencePolicy()
     {
-        var retryPolicy = HttpPolicyExtensions // retry 3 times
+        var retryPolicy = HttpPolicyExtensions // retry mechanism that retries 3 times
         .HandleTransientHttpError()
         .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
         .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
 
-        var circuitBreaker = HttpPolicyExtensions // circuit breaker, after 5 consecutive failures, close the fkin door for 30 seconds
+        var circuitBreaker = HttpPolicyExtensions // a circuit breaker, after 5 consecutive failures, close the fkin door for 30 seconds
         .HandleTransientHttpError()
         .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
 
