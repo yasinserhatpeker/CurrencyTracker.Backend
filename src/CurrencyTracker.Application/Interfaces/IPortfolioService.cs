@@ -10,7 +10,6 @@ public interface IPortfolioService
     Task<IEnumerable<PortfolioResponseDTO>> GetPortfoliosByUserAsync(Guid userId);
     Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO);
     Task DeletePortfolioAsync(Guid id);
-    Task<PortfolioResponseDTO> GetPortfolioSummaryAsync(Guid id, PortfolioSummaryDTO portfolioSummaryDTO);
-
+    Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id);
 
 }

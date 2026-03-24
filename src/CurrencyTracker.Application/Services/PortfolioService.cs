@@ -71,7 +71,8 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    public Task<PortfolioResponseDTO> GetPortfolioSummaryAsync(Guid id, PortfolioSummaryDTO portfolioSummaryDTO)
+
+    public Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id)
     {
         throw new NotImplementedException();
     }
