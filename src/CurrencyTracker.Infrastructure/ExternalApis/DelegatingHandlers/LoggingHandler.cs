@@ -35,9 +35,12 @@ public class LoggingHandler : DelegatingHandler
         }
         catch(Exception ex)
         {
-            sw.Stop();
             _logger.LogError(ex, "[{CorrelationId}] External API Error: {ElapsedMilliseconds}ms", correlationId, sw.ElapsedMilliseconds);
             throw;
+        }
+        finally
+        {
+            sw.Stop();
         }
        
    }
