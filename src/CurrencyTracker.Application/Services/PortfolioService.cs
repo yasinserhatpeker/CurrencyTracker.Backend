@@ -37,14 +37,16 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    public async Task DeletePortfolioAsync(Guid id)
-    {
-        var deletedPortfolio = await _portfolioRepository.DeleteAsync(id);
-        if (deletedPortfolio is null)
+    public async Task DeletePortfolioAsync(Guid id,Guid userId)
+    {   
+        var portfolio = await _portfolioRepository.GetByIdAsync(id);
+        if (portfolio is null || portfolio.UserId != userId)
         {
-            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id}", id);
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", id, userId);
             throw new KeyNotFoundException("Portfolio not found");
         }
+        var deletedPortfolio = await _portfolioRepository.DeleteAsync(id);
+        
         _logger.LogInformation("a portfolio is deleted for the user {UserId} and the id of the portfolio is {Id}", deletedPortfolio.UserId, deletedPortfolio.Id);
 
 
@@ -128,15 +130,12 @@ public class PortfolioService : IPortfolioService
             CurrentValue = masterCurrentValue
         };
 
-
-
-
     }
 
-    public async Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
+    public async Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO, Guid userId)
     {
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
-        if (portfolio is null)
+        if (portfolio is null || portfolio.UserId != userId)
         {
             _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id}", id);
             throw new KeyNotFoundException("No portfolio is found");

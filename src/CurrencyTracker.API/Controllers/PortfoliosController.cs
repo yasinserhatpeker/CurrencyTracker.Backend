@@ -15,9 +15,6 @@ namespace CurrencyTracker.API.Controllers
             _portfolioService = portfolioService;
 
         }
-
-
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePortfolioDTO createPortfolioDTO)
         {
@@ -57,33 +54,28 @@ namespace CurrencyTracker.API.Controllers
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
-        {
+        { 
+          var currentUserId = GetCurrentUserId();
+          await _portfolioService.DeletePortfolioAsync(id, currentUserId);
+          return NoContent();
+        
+        }
 
-            var portfolio = await _portfolioService.GetByIdAsync(id);
-            if (portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You have no right to delete this portfolio"));
-            }
-            await _portfolioService.DeletePortfolioAsync(id);
-            return NoContent();
+        [HttpGet("{id}/summary")]
+        public async Task<IActionResult> GetPorfolioSummary(Guid id)
+        {  
+           var currentUserId = GetCurrentUserId();
+           var summary = await _portfolioService.GetPortfolioSummaryAsync(id, currentUserId);
+           return Ok(ApiResponse<PortfolioSummaryDTO>.Success(summary, "You retrieved the portfolio summary successfully."));
 
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
         {
-            if (updatePortfolioDTO.Id != id)
-            {
-                return BadRequest(ApiResponse<object>.Fail("ID mismatch"));
-            }
-
-            var portfolio = await _portfolioService.GetByIdAsync(id);
-            if (portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You have no right to update this portfolio"));
-            }
-            var updatedPortfolio = await _portfolioService.UpdatePortfolioAsync(id, updatePortfolioDTO);
-            return Ok(ApiResponse<PortfolioResponseDTO>.Success(updatedPortfolio, "You updated the portfolio successfully."));
+           var currentUserId = GetCurrentUserId();
+           var updatedPortfolio = await _portfolioService.UpdatePortfolioAsync(id, updatePortfolioDTO, currentUserId);
+           return Ok(ApiResponse<PortfolioResponseDTO>.Success(updatedPortfolio, "You updated the portfolio successfully."));
 
         }
 
