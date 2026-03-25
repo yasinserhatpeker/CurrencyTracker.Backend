@@ -11,14 +11,15 @@ public class PortfolioService : IPortfolioService
 {
     private readonly IMapper _mapper;
     private readonly IGenericRepository<Portfolio> _portfolioRepository;
-
+    private readonly IGenericRepository<Transaction> _transactionRepository;
     private readonly ILogger<PortfolioService> _logger;
 
-    public PortfolioService(IMapper mapper, IGenericRepository<Portfolio> portfolioRepository, ILogger<PortfolioService> logger)
+    public PortfolioService(IMapper mapper, IGenericRepository<Portfolio> portfolioRepository, ILogger<PortfolioService> logger, IGenericRepository<Transaction> transactionRepository)
     {
         _mapper = mapper;
         _portfolioRepository = portfolioRepository;
         _logger = logger;
+        _transactionRepository = transactionRepository;
     }
 
     public async Task<PortfolioResponseDTO> CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO)
@@ -72,9 +73,24 @@ public class PortfolioService : IPortfolioService
     }
 
 
-    public Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id)
+    public async Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id,Guid userId)
     {
-        throw new NotImplementedException();
+       var portfolio = await _portfolioRepository.GetByIdAsync(id);
+       if(portfolio is null || portfolio.UserId != userId)
+        {
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its UserId:{UserId}", id,portfolio!.UserId);
+            throw new KeyNotFoundException("Portfolio not found");
+        }
+        var transactions = await _transactionRepository.Find(x=>x.PortfolioId==id);
+        if(transactions is null || !transactions.Any())
+        {
+            _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", id);
+            throw new KeyNotFoundException("No transaction is found for the portfolio");
+        }
+        
+        
+        
+
     }
 
     public async Task<PortfolioResponseDTO> UpdatePortfolioAsync(Guid id, UpdatePortfolioDTO updatePortfolioDTO)
@@ -87,7 +103,7 @@ public class PortfolioService : IPortfolioService
 
         }
         var oldName = portfolio.Name;
-        
+
         _mapper.Map(updatePortfolioDTO, portfolio);
         await _portfolioRepository.UpdateAsync(portfolio);
 
@@ -97,7 +113,7 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    
 
-    
+
+
 }
