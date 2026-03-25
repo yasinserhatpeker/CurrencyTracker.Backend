@@ -13,13 +13,15 @@ public class PortfolioService : IPortfolioService
     private readonly IGenericRepository<Portfolio> _portfolioRepository;
     private readonly IGenericRepository<Transaction> _transactionRepository;
     private readonly ILogger<PortfolioService> _logger;
+    private readonly IMarketService _marketService;
 
-    public PortfolioService(IMapper mapper, IGenericRepository<Portfolio> portfolioRepository, ILogger<PortfolioService> logger, IGenericRepository<Transaction> transactionRepository)
+    public PortfolioService(IMapper mapper, IGenericRepository<Portfolio> portfolioRepository, ILogger<PortfolioService> logger, IGenericRepository<Transaction> transactionRepository, IMarketService marketService)
     {
         _mapper = mapper;
         _portfolioRepository = portfolioRepository;
         _logger = logger;
         _transactionRepository = transactionRepository;
+        _marketService = marketService;
     }
 
     public async Task<PortfolioResponseDTO> CreatePortfolioAsync(CreatePortfolioDTO createPortfolioDTO)
@@ -73,23 +75,61 @@ public class PortfolioService : IPortfolioService
     }
 
 
-    public async Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id,Guid userId)
+    public async Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id, Guid userId)
     {
-       var portfolio = await _portfolioRepository.GetByIdAsync(id);
-       if(portfolio is null || portfolio.UserId != userId)
+        var portfolio = await _portfolioRepository.GetByIdAsync(id);
+        if (portfolio is null || portfolio.UserId != userId)
         {
-            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its UserId:{UserId}", id,portfolio!.UserId);
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", id, userId);
             throw new KeyNotFoundException("Portfolio not found");
         }
-        var transactions = await _transactionRepository.Find(x=>x.PortfolioId==id);
-        if(transactions is null || !transactions.Any())
+        var transactions = await _transactionRepository.Find(x => x.PortfolioId == id);
+        if (transactions is null || !transactions.Any())
         {
             _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", id);
-            throw new KeyNotFoundException("No transaction is found for the portfolio");
+            return new PortfolioSummaryDTO
+            {
+                Id = id,
+                UserId = userId,
+                Name = portfolio.Name,
+                TotalInvested = 0,
+                CurrentValue = 0
+            };
         }
-        
-        
-        
+        decimal masterTotalInvested = 0;
+        decimal masterCurrentValue = 0;
+        var groupedTransactions = transactions.GroupBy(x => x.BaseCurrency);
+
+        foreach (var group in groupedTransactions)
+        {
+            var baseCurrency = group.Key;
+            var totalAssetQuantity = group.Sum(x => x.Quantity);
+            var totalAssetCost = group.Sum(x => x.Quantity * x.Price);
+
+            masterTotalInvested += totalAssetCost;
+            try
+            {
+                var marketPrice = await _marketService.GetMarketPriceAsync(baseCurrency, portfolio.DisplayCurrency);
+                masterCurrentValue += marketPrice.Price * totalAssetQuantity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while fetching the price for the BaseCurrency {BaseCurrency}", baseCurrency);
+                masterCurrentValue += totalAssetCost;
+
+            }
+        }
+        return new PortfolioSummaryDTO
+        {
+            Id = id,
+            UserId = userId,
+            Name = portfolio.Name,
+            TotalInvested = masterTotalInvested,
+            CurrentValue = masterCurrentValue
+        };
+
+
+
 
     }
 
