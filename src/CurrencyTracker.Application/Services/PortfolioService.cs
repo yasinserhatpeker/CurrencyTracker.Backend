@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using CurrencyTracker.Application.DTOs.Portfolios;
 using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens.Experimental;
 
 
 namespace CurrencyTracker.Application.Services;
@@ -37,8 +39,8 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    public async Task DeletePortfolioAsync(Guid id,Guid userId)
-    {   
+    public async Task DeletePortfolioAsync(Guid id, Guid userId)
+    {
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
         if (portfolio is null || portfolio.UserId != userId)
         {
@@ -46,7 +48,7 @@ public class PortfolioService : IPortfolioService
             throw new KeyNotFoundException("Portfolio not found");
         }
         var deletedPortfolio = await _portfolioRepository.DeleteAsync(id);
-        
+
         _logger.LogInformation("a portfolio is deleted for the user {UserId} and the id of the portfolio is {Id}", deletedPortfolio.UserId, deletedPortfolio.Id);
 
 
@@ -85,10 +87,20 @@ public class PortfolioService : IPortfolioService
             _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", id, userId);
             throw new KeyNotFoundException("Portfolio not found");
         }
-        var transactions = await _transactionRepository.Find(x => x.PortfolioId == id);
-        if (transactions is null || !transactions.Any())
+        var transactions = await _transactionRepository.Find(x=>x.PortfolioId == id);
+        
+        var groupedTransactions = transactions
+         .GroupBy(x=>x.BaseCurrency)
+         .Select(g => new
+         {
+             BaseCurrency = g.Key,
+             TotalQuantity = g.Sum(x => x.Quantity),
+             TotalCost = g.Sum(x=>x.Price * x.Quantity),
+         }).ToList();
+
+        if (!groupedTransactions.Any())
         {
-            _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", id);
+            _logger.LogWarning("no transaction is found for the portfolio {Id}", id);
             return new PortfolioSummaryDTO
             {
                 Id = id,
@@ -97,29 +109,27 @@ public class PortfolioService : IPortfolioService
                 TotalInvested = 0,
                 CurrentValue = 0
             };
+        
         }
-        decimal masterTotalInvested = 0;
         decimal masterCurrentValue = 0;
-        var groupedTransactions = transactions.GroupBy(x => x.BaseCurrency);
+        decimal masterTotalInvested = 0;
 
-        foreach (var group in groupedTransactions)
+        foreach(var group in groupedTransactions)
         {
-            var baseCurrency = group.Key;
-            var totalAssetQuantity = group.Sum(x => x.Quantity);
-            var totalAssetCost = group.Sum(x => x.Quantity * x.Price);
-
-            masterTotalInvested += totalAssetCost;
+            masterTotalInvested += group.TotalCost;
             try
             {
-                var marketPrice = await _marketService.GetMarketPriceAsync(baseCurrency, portfolio.DisplayCurrency);
-                masterCurrentValue += marketPrice.Price * totalAssetQuantity;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error while fetching the price for the BaseCurrency {BaseCurrency}", baseCurrency);
-                masterCurrentValue += totalAssetCost;
+            var currentPrice = await _marketService.GetMarketPriceAsync(group.BaseCurrency,portfolio.DisplayCurrency);
 
+            masterCurrentValue += currentPrice.Price * group.TotalQuantity;
+                
             }
+            catch(Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to get the market price for the base currency {BaseCurrency}", group.BaseCurrency);
+                masterCurrentValue += group.TotalCost;
+            }
+
         }
         return new PortfolioSummaryDTO
         {
