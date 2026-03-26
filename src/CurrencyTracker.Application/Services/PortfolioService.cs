@@ -78,7 +78,6 @@ public class PortfolioService : IPortfolioService
 
     }
 
-
     public async Task<PortfolioSummaryDTO> GetPortfolioSummaryAsync(Guid id, Guid userId)
     {
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
