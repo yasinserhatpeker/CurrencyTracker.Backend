@@ -17,16 +17,10 @@ namespace CurrencyTracker.API.Controllers
             _portfolioService = portfolioService;
         }
         [HttpPost]
-        public async Task<IActionResult> Create(CreateTransactionsDTO createTransactionsDTO)
+        public async Task<IActionResult> Create(CreateTransactionDTO createTransactionDTO)
         {
-
-            var portfolio = await _portfolioService.GetByIdAsync(createTransactionsDTO.PortfolioId);
-            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-
-            }
-            var transaction = await _transactionService.CreateTransactionAsync(createTransactionsDTO);
+            var userId = GetCurrentUserId();
+            var transaction = await _transactionService.CreateTransactionAsync(createTransactionDTO,userId);
             return CreatedAtAction(nameof(GetById), new { id = transaction.Id }, ApiResponse<TransactionResponseDTO>.Success(transaction, "You created the transaction successfully."));
 
 
@@ -79,20 +73,9 @@ namespace CurrencyTracker.API.Controllers
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateTransactionDTO updateTransactionDTO)
-        {
-            if (updateTransactionDTO.Id != id)
-            {
-                return BadRequest(ApiResponse<object>.Fail("ID mismatch"));
-            }
-
-            var existingTransaction = await _transactionService.GetByIdAsync(id);
-            var portfolio = await _portfolioService.GetByIdAsync(existingTransaction.PortfolioId);
-
-            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it"));
-            }
-            var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO);
+        {   
+            var userId = GetCurrentUserId();
+            var updatedTransaction = await _transactionService.UpdateTransactionAsync(id, updateTransactionDTO, userId);
             return Ok(ApiResponse<TransactionResponseDTO>.Success(updatedTransaction, "You updated the transaction successfully."));
         }
     }

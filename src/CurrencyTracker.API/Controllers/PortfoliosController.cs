@@ -19,7 +19,6 @@ namespace CurrencyTracker.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreatePortfolioDTO createPortfolioDTO)
         {
 
-
             createPortfolioDTO.UserId = GetCurrentUserId();
             var portfolio = await _portfolioService.CreatePortfolioAsync(createPortfolioDTO);
 

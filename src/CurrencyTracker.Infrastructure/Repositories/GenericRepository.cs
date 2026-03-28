@@ -62,8 +62,5 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
         return await _dbSet.Where(predicate).AsNoTracking().ToListAsync();
     }
 
-    public IQueryable<T> Query()
-    {
-       return _context.Set<T>();
-    }
+  
 }

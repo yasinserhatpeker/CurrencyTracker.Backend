@@ -3,10 +3,8 @@ using CurrencyTracker.Domain.Entities.Enums;
 
 namespace CurrencyTracker.Application.DTOs.Transactions;
 
-public class CreateTransactionsDTO
+public class CreateTransactionDTO
 {
-
-    
     public Guid PortfolioId { get; set; }
     
     public DateTime TransactionDate { get; set; }

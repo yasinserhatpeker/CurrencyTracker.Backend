@@ -4,8 +4,6 @@ using CurrencyTracker.Application.Interfaces;
 using CurrencyTracker.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
-
-
 namespace CurrencyTracker.Application.Services;
 
 public class PortfolioService : IPortfolioService
@@ -89,11 +87,11 @@ public class PortfolioService : IPortfolioService
         
         var groupedTransactions = transactions
          .GroupBy(x=>x.BaseCurrency)
-         .Select(g => new
+         .Select(group => new // group by base currency (e.g, USD,EUR,TRY)
          {
-             BaseCurrency = g.Key,
-             TotalQuantity = g.Sum(x => x.Quantity),
-             TotalCost = g.Sum(x=>x.Price * x.Quantity),
+             BaseCurrency = group.Key,
+             TotalQuantity = group.Sum(x => x.Quantity), // total quantity
+             TotalCost = group.Sum(x=>x.Price * x.Quantity), // total cost
          }).ToList();
 
         if (!groupedTransactions.Any())
@@ -119,7 +117,7 @@ public class PortfolioService : IPortfolioService
             {
             var currentPrice = await _marketService.GetMarketPriceAsync(group.BaseCurrency,portfolio.DisplayCurrency);
 
-            masterCurrentValue += currentPrice.Price * group.TotalQuantity;
+            masterCurrentValue += currentPrice.Price * group.TotalQuantity; // live current value
                 
             }
             catch(Exception ex)
