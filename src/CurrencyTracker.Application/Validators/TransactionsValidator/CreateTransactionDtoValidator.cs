@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace CurrencyTracker.Application.Validators.TransactionsValidator;
 
-public class CreateTransactionDtoValidator : AbstractValidator<CreateTransactionsDTO>
+public class CreateTransactionDtoValidator : AbstractValidator<CreateTransactionDTO>
 {
     public CreateTransactionDtoValidator()
     {
