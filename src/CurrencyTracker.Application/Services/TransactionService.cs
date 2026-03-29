@@ -49,14 +49,20 @@ public class TransactionService : ITransactionService
     }
 
     public async Task DeleteTransactionAsync(Guid id,Guid userId)
-    {
-        var deletedTransaction = await _transactionRepository.DeleteAsync(id);
-        var portfolio = await _portfolioRepository.GetByIdAsync(deletedTransaction!.PortfolioId);
+    {   
+        var transaction = await _transactionRepository.GetByIdAsync(id);
+        if(transaction is null)
+        {
+            _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);
+            throw new KeyNotFoundException("Transaction not found");
+        }
+        var portfolio = await _portfolioRepository.GetByIdAsync(transaction.PortfolioId);
         if(portfolio is null || portfolio.UserId != userId)
         {
-            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", deletedTransaction.PortfolioId, userId);
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", transaction.PortfolioId, userId);
             throw new KeyNotFoundException("You dont have an access to do it");
         }
+        var deletedTransaction = await _transactionRepository.DeleteAsync(id);
         if (deletedTransaction is null)
         {
             _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);
@@ -70,16 +76,18 @@ public class TransactionService : ITransactionService
     public async Task<TransactionResponseDTO> GetByIdAsync(Guid id, Guid userId)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id);
+        if(transaction is null)
+        {
+            _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);
+            throw new KeyNotFoundException("Transaction not found");
+        }
         var portfolio = await _portfolioRepository.GetByIdAsync(transaction!.PortfolioId);
         if(portfolio is null || portfolio.UserId != userId)
         {   
             _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", transaction.PortfolioId, userId);
             throw new KeyNotFoundException("You dont have an access to do it");
         }
-        if (transaction is null)
-        {
-            throw new KeyNotFoundException("Transaction is not found");
-        }
+        
         return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
@@ -92,7 +100,7 @@ public class TransactionService : ITransactionService
             throw new KeyNotFoundException("You dont have an access to do it");
         }
         var portfolioTransactions = await _transactionRepository.Find(x => x.PortfolioId == portfolioId);
-        if (portfolioTransactions is null | !portfolioTransactions!.Any())
+        if (portfolioTransactions is null || !portfolioTransactions!.Any())
         {
             _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", portfolioId);
 
