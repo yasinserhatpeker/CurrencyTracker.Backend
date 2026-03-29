@@ -48,9 +48,15 @@ public class TransactionService : ITransactionService
         return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
-    public async Task DeleteTransactionAsync(Guid id)
+    public async Task DeleteTransactionAsync(Guid id,Guid userId)
     {
         var deletedTransaction = await _transactionRepository.DeleteAsync(id);
+        var portfolio = await _portfolioRepository.GetByIdAsync(deletedTransaction!.PortfolioId);
+        if(portfolio is null || portfolio.UserId != userId)
+        {
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", deletedTransaction.PortfolioId, userId);
+            throw new KeyNotFoundException("You dont have an access to do it");
+        }
         if (deletedTransaction is null)
         {
             _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);

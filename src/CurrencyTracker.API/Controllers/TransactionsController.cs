@@ -52,16 +52,8 @@ namespace CurrencyTracker.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-
-            var transactionDto = await _transactionService.GetByIdAsync(id);
-            var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
-
-            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-            }
-
-            await _transactionService.DeleteTransactionAsync(id);
+            var userId = GetCurrentUserId();
+            await _transactionService.DeleteTransactionAsync(id,userId);
             return NoContent();
 
         }
