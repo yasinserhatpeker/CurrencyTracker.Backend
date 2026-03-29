@@ -22,7 +22,7 @@ public class MappingProfile : Profile
         CreateMap<UpdatePortfolioDTO,Portfolio>();
 
         // Transaction Mapping
-        CreateMap<CreateTransactionsDTO,Transaction>();
+        CreateMap<CreateTransactionDTO,Transaction>();
         CreateMap<Transaction,TransactionResponseDTO>().ForMember(dest => dest.TotalValue, opt => opt.MapFrom (src => src.Price * src.Quantity)); // totalValue = Price * Quantity
         CreateMap<UpdateTransactionDTO,Transaction>();
 
