@@ -111,7 +111,7 @@ public class TransactionService : ITransactionService
             _logger.LogWarning("a transaction is not found. The id of the transaction is {Id}", id);
             throw new KeyNotFoundException("Transaction not found");
         }
-        var portfolio = await _portfolioService.GetByIdAsync(transaction.PortfolioId);
+        var portfolio = await _portfolioRepository.GetByIdAsync(transaction.PortfolioId);
 
         if (portfolio is null || portfolio.UserId != userId)
         {
