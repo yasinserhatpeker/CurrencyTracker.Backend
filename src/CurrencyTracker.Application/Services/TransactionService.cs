@@ -83,10 +83,15 @@ public class TransactionService : ITransactionService
         return _mapper.Map<TransactionResponseDTO>(transaction);
     }
 
-    public async Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId)
-    {
+    public async Task<IEnumerable<TransactionResponseDTO>> GetTransactionsByPortfolioAsync(Guid portfolioId,Guid userId)
+    {   
+        var portfolio = await _portfolioRepository.GetByIdAsync(portfolioId);
+        if(portfolio is null || portfolio.UserId != userId)
+        {
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", portfolioId, userId);
+            throw new KeyNotFoundException("You dont have an access to do it");
+        }
         var portfolioTransactions = await _transactionRepository.Find(x => x.PortfolioId == portfolioId);
-
         if (portfolioTransactions is null | !portfolioTransactions!.Any())
         {
             _logger.LogWarning("no transaction is found for the portfolio {PortfolioId}", portfolioId);

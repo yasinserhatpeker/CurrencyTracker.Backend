@@ -10,11 +10,10 @@ namespace CurrencyTracker.API.Controllers
     public class TransactionsController : CustomBaseController
     {
         private readonly ITransactionService _transactionService;
-        private readonly IPortfolioService _portfolioService;
-        public TransactionsController(ITransactionService transactionService, IPortfolioService portfolioService)
+        
+        public TransactionsController(ITransactionService transactionService)
         {
             _transactionService = transactionService;
-            _portfolioService = portfolioService;
         }
         [HttpPost]
         public async Task<IActionResult> Create(CreateTransactionDTO createTransactionDTO)
@@ -37,13 +36,9 @@ namespace CurrencyTracker.API.Controllers
         [HttpGet("portfolio/{portfolioId}")]
         public async Task<IActionResult> GetByPortfolio(Guid portfolioId)
         {
-
-            var portfolio = await _portfolioService.GetByIdAsync(portfolioId);
-            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-            }
-            var transactions = await _transactionService.GetTransactionsByPortfolioAsync(portfolioId);
+            
+            var userId = GetCurrentUserId();
+            var transactions = await _transactionService.GetTransactionsByPortfolioAsync(portfolioId,userId);
             return Ok(ApiResponse<IEnumerable<TransactionResponseDTO>>.Success(transactions, "You retrieved the transactions successfully."));
 
 
