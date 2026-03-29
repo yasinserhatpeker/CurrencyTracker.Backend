@@ -61,9 +61,15 @@ public class TransactionService : ITransactionService
 
     }
 
-    public async Task<TransactionResponseDTO> GetByIdAsync(Guid id)
+    public async Task<TransactionResponseDTO> GetByIdAsync(Guid id, Guid userId)
     {
         var transaction = await _transactionRepository.GetByIdAsync(id);
+        var portfolio = await _portfolioRepository.GetByIdAsync(transaction!.PortfolioId);
+        if(portfolio is null || portfolio.UserId != userId)
+        {   
+            _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id} and its user id is {UserId}", transaction.PortfolioId, userId);
+            throw new KeyNotFoundException("You dont have an access to do it");
+        }
         if (transaction is null)
         {
             throw new KeyNotFoundException("Transaction is not found");

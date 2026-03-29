@@ -28,13 +28,8 @@ namespace CurrencyTracker.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-
-            var transactionDto = await _transactionService.GetByIdAsync(id);
-            var portfolio = await _portfolioService.GetByIdAsync(transactionDto.PortfolioId);
-            if (portfolio is null || portfolio.UserId != GetCurrentUserId())
-            {
-                return Unauthorized(ApiResponse<object>.Fail("You dont have an access to do it."));
-            }
+            var userId = GetCurrentUserId();
+            var transactionDto = await _transactionService.GetByIdAsync(id,userId);
             return Ok(ApiResponse<TransactionResponseDTO>.Success(transactionDto, "You retrieved the transaction successfully."));
 
         }
