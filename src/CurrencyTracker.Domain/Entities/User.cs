@@ -18,8 +18,8 @@ public class User : BaseEntity
     public string? EmailVerificationTokenHash {get;set;}
     
     public string Email { get; set; } = string.Empty;
-    public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
-    public ICollection<RefreshToken> RefreshTokens {get;set;} = new List<RefreshToken>();
+    public ICollection<Portfolio> Portfolios { get; set; } = new List<Portfolio>(); // one to many
+    public ICollection<RefreshToken> RefreshTokens {get;set;} = new List<RefreshToken>(); // one to many
 
 }
 
