@@ -4,6 +4,7 @@ using CurrencyTracker.Application.Services;
 using CurrencyTracker.Infrastructure.Authentication;
 using CurrencyTracker.Infrastructure.EmailVerification;
 using CurrencyTracker.Infrastructure.ExternalApis;
+using CurrencyTracker.Infrastructure.ExternalAPIs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,19 @@ public static class InfrastructureRegistration
          })
          .AddHttpMessageHandler<LoggingHandler>()
          .AddPolicyHandler(GetResiliencePolicy());
+         
+         services.AddHttpClient<IPriceProvider,CoinGeckoClient>(client =>
+         {
+            client.BaseAddress = new Uri(configuration["CoinGeckoApi:BaseUrl"]?? throw new InvalidCastException("CoinGeckoApi is not found in the configuration file"));
+
+            client.DefaultRequestHeaders.Add("x-cg-demo-api-key", configuration["CoinGeckoApi:ApiKey"] ?? throw new InvalidCastException("CoinGeckoApi is not found in the configuration file")); 
+
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.Timeout = TimeSpan.FromSeconds(10);
+
+         })
+            .AddHttpMessageHandler<LoggingHandler>()
+            .AddPolicyHandler(GetResiliencePolicy());
 
         
 
