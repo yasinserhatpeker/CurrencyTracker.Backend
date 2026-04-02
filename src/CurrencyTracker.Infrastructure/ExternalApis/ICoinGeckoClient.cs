@@ -1,5 +1,3 @@
-using System;
-
 namespace CurrencyTracker.Infrastructure.ExternalAPIs;
 
 public class ICoinGeckoClient : IServiceProvider
