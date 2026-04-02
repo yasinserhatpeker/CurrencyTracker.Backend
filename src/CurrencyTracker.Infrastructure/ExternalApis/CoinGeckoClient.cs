@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Infrastructure.ExternalAPIs;
 
-public class ICoinGeckoClient : IServiceProvider
+public class CoinGeckoClient : IServiceProvider
 {
     public object? GetService(Type serviceType)
     {
