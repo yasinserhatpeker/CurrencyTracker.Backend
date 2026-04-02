@@ -1,4 +1,3 @@
-using System;
 using CurrencyTracker.Application.DTOs.Portfolios;
 using FluentValidation;
 

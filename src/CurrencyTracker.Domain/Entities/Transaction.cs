@@ -1,4 +1,3 @@
-using System;
 using CurrencyTracker.Domain.Entities.Enums;
 
 namespace CurrencyTracker.Domain.Entities;
