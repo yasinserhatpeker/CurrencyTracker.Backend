@@ -55,6 +55,8 @@ public static class InfrastructureRegistration
          .AddHttpMessageHandler<LoggingHandler>()
          .AddPolicyHandler(GetResiliencePolicy());
 
+        
+
     }
 
     public static IAsyncPolicy<HttpResponseMessage> GetResiliencePolicy()
