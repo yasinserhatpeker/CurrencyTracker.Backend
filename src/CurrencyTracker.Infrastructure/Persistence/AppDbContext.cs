@@ -12,6 +12,7 @@ public class AppDbContext:DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder); 
+        
         modelBuilder.Entity<Transaction>(builder =>
         {
             builder.Property(t=>t.Price).HasPrecision(18,8);

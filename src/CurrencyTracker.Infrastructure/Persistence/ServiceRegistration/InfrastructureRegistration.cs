@@ -50,7 +50,7 @@ public static class InfrastructureRegistration
 
          services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
          {
-             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidCastException("FrankfurterApi is not found in the configuration file"));
+             client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidOperationException("FrankfurterApi is not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
          })
          .AddHttpMessageHandler<LoggingHandler>()
@@ -58,9 +58,9 @@ public static class InfrastructureRegistration
          
          services.AddHttpClient<IPriceProvider,CoinGeckoClient>(client =>
          {
-            client.BaseAddress = new Uri(configuration["CoinGeckoApi:BaseUrl"]?? throw new InvalidCastException("CoinGeckoApi is not found in the configuration file"));
+            client.BaseAddress = new Uri(configuration["CoinGeckoApi:BaseUrl"] ?? throw new InvalidOperationException("CoinGeckoApi is not found in the configuration file"));
 
-            client.DefaultRequestHeaders.Add("x-cg-demo-api-key", configuration["CoinGeckoApi:ApiKey"] ?? throw new InvalidCastException("CoinGeckoApi is not found in the configuration file")); 
+            client.DefaultRequestHeaders.Add("x-cg-demo-api-key", configuration["CoinGeckoApi:ApiKey"] ?? throw new InvalidOperationException("CoinGeckoApi is not found in the configuration file")); 
 
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.Timeout = TimeSpan.FromSeconds(10);
