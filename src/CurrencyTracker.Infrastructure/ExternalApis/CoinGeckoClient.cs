@@ -6,9 +6,9 @@ namespace CurrencyTracker.Infrastructure.ExternalAPIs;
 
 public class CoinGeckoClient : IPriceProvider
 {
-    public string ProviderName => throw new NotImplementedException();
+    public string ProviderName => "CoinGecko";
 
-    public int Priority => throw new NotImplementedException();
+    public int Priority => 10;
 
     public Task<MarketPriceDTO> GetPriceAsync(string baseCurrency, string quoteCurrency)
     {
