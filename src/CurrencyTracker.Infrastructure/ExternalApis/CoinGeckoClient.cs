@@ -19,7 +19,7 @@ public class CoinGeckoClient : IPriceProvider
     {
         {"BTC","bitcoin"},
         {"ETH","ethereum"},
-        {"USDT","tehter"},
+        {"USDT","tether"},
         {"BNB","binancecoin"},
         {"SOL","solana"},
         {"XRP","ripple"},
