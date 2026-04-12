@@ -17,7 +17,7 @@ namespace CurrencyTracker.API.Controllers
             _marketService = marketService;
         }
         [HttpGet("price/{baseCurrency}")]
-        public async Task<IActionResult> GetLatestData([FromRoute] string baseCurrency, [FromQuery] string quoteCurrency = "TRY")
+        public async Task<IActionResult> GetLatestFiatData([FromRoute] string baseCurrency, [FromQuery] string quoteCurrency = "TRY")
         {
             if (string.IsNullOrWhiteSpace(baseCurrency))
             {
