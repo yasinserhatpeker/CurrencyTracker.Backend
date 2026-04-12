@@ -10,7 +10,7 @@ public class FrankfurterClient : IPriceProvider
 {
     public string ProviderName => "Frankfurter";
 
-    public int Priority => 10;
+    public int Priority => 2;
 
     private readonly HttpClient _client;
 

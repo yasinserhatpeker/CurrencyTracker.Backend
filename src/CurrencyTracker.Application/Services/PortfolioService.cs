@@ -28,6 +28,7 @@ public class PortfolioService : IPortfolioService
         var newPortfolio = _mapper.Map<Portfolio>(createPortfolioDTO);
 
         await _portfolioRepository.AddAsync(newPortfolio);
+       
 
         _logger.LogInformation("a new portfolio is created for the user {UserId} and the id of the portfolio is {Id}", createPortfolioDTO.UserId, newPortfolio.Id);
 
@@ -51,10 +52,10 @@ public class PortfolioService : IPortfolioService
 
     }
 
-    public async Task<PortfolioResponseDTO> GetByIdAsync(Guid id)
-    {
+    public async Task<PortfolioResponseDTO> GetByIdAsync(Guid id,Guid userId)
+    {   
         var portfolio = await _portfolioRepository.GetByIdAsync(id);
-        if (portfolio is null)
+        if (portfolio is null || portfolio.UserId != userId)
         {
             _logger.LogWarning("a portfolio is not found. The id of the portfolio is {Id}", id);
             throw new KeyNotFoundException("Portfolio not found");
