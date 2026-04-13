@@ -28,6 +28,7 @@ if (app.Environment.IsDevelopment())
 app.UseSerilogRequestLogging();
 app.UseMiddleware<ExceptionHandler>();
 app.UseHttpsRedirection();
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

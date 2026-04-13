@@ -13,6 +13,18 @@ public static class PersistenceRegistration
     {
        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+       
+       
+       services.AddCors(options =>
+       {
+           options.AddPolicy("AllowReactApp" , policy=> 
+           {
+                policy.WithOrigins("http://localhost:5173")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+           });
+       });
 
       
     }
