@@ -19,9 +19,7 @@ public class MarketService : IMarketService
     public async Task<MarketPriceDTO> GetMarketPriceAsync(string baseCurrency, string quoteCurrency)
     {
       
-   var sortedProviders = _providers.OrderBy(x => x.Priority);
-
-    foreach (var provider in sortedProviders)
+      foreach (var provider in _providers)
     {
         if (provider.IsSupported(baseCurrency))
         {
@@ -32,7 +30,7 @@ public class MarketService : IMarketService
                 _logger.LogInformation("Price fetched for {BaseCurrency}/{QuoteCurrency} via {Provider}", 
                     baseCurrency, quoteCurrency, provider.ProviderName);
                     
-                return priceData; // Success! Exit the loop and return the data.
+                return priceData; 
             }
             catch (Exception ex)
             {

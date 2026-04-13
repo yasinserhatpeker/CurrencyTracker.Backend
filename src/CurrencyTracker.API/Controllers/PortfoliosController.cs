@@ -30,10 +30,10 @@ namespace CurrencyTracker.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id,Guid userId)
         {
-
-            var portfolio = await _portfolioService.GetByIdAsync(id);
+        
+            var portfolio = await _portfolioService.GetByIdAsync(id,userId);
             if (portfolio.UserId != GetCurrentUserId())
             {
                 return Unauthorized(ApiResponse<object>.Fail("You have no right to see this portfolio"));
