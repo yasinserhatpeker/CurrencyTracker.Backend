@@ -46,9 +46,11 @@ public static class InfrastructureRegistration
              };
          });
          
-         services.AddTransient<LoggingHandler>();
+        services.AddTransient<LoggingHandler>();
+        services.AddTransient<IPriceProvider>(sp=>sp.GetRequiredService<CoinGeckoClient>());
+        services.AddTransient<IPriceProvider>(sp=>sp.GetRequiredService<FrankfurterClient>());  
 
-         services.AddHttpClient<IPriceProvider, FrankfurterClient>(client =>
+         services.AddHttpClient<FrankfurterClient>(client =>
          {
              client.BaseAddress =new Uri(configuration["ExternalApis:FrankfurterApi"] ?? throw new InvalidOperationException("FrankfurterApi is not found in the configuration file"));
              client.Timeout = TimeSpan.FromSeconds(10);
@@ -56,7 +58,7 @@ public static class InfrastructureRegistration
          .AddHttpMessageHandler<LoggingHandler>()
          .AddPolicyHandler(GetResiliencePolicy());
          
-         services.AddHttpClient<IPriceProvider,CoinGeckoClient>(client =>
+         services.AddHttpClient<CoinGeckoClient>(client =>
          {
             client.BaseAddress = new Uri(configuration["CoinGeckoApi:BaseUrl"] ?? throw new InvalidOperationException("CoinGeckoApi is not found in the configuration file"));
 
@@ -68,6 +70,8 @@ public static class InfrastructureRegistration
          })
             .AddHttpMessageHandler<LoggingHandler>()
             .AddPolicyHandler(GetResiliencePolicy());
+
+       
 
         
 
